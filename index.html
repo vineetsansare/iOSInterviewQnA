@@ -1,0 +1,2817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iOS Tech Lead Interview Master Prep & Validator (2026 Edition)</title>
+  <!-- Mermaid.js for beautiful diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    /* -------------------------------------------------------------
+       NOTEBOOK DESIGN THEME (Clean, Paper Tones, No Harsh Neon)
+       ------------------------------------------------------------- */
+    :root {
+      /* Notebook Light Theme (Muted Paper / Warm Linen) */
+      --bg: #f9f8f5;
+      --card-bg: #ffffff;
+      --card-border: #e4e1d7;
+      --sidebar-bg: #f3f1eb;
+      --sidebar-border: #dedad0;
+      --text-main: #24292f;
+      --text-muted: #656d76;
+      --text-sub: #4b5563;
+      --accent: #2563eb;          /* Classic ballpoint ink blue */
+      --accent-soft: #eff6ff;
+      --accent-border: #bfdbfe;
+      --success: #15803d;         /* Forest green */
+      --success-soft: #f0fdf4;
+      --success-border: #bbf7d0;
+      --warning: #b45309;         /* Warm amber */
+      --warning-soft: #fffbeb;
+      --warning-border: #fde68a;
+      --danger: #b91c1c;          /* Stamp red */
+      --danger-soft: #fef2f2;
+      --danger-border: #fecaca;
+      --purple: #6d28d9;          /* Deep ink violet */
+      --purple-soft: #f5f3ff;
+      --purple-border: #ddd6fe;
+      --legacy: #475569;          /* Muted slate for legacy */
+      --legacy-soft: #f1f5f9;
+      --legacy-border: #cbd5e1;
+      --code-bg: #f4f2ec;
+      --code-border: #e2ded4;
+      --code-text: #1e293b;
+      --tag-gemini: #4338ca;
+      --notebook-line: #ebe7df;
+      --sidebar-width: 330px;
+    }
+
+    [data-theme="dark"] {
+      /* Notebook Dark Theme (Dark Slate Journal, Soothing, Zero Neon) */
+      --bg: #14171d;
+      --card-bg: #1c202a;
+      --card-border: #2a3140;
+      --sidebar-bg: #181c24;
+      --sidebar-border: #282f3d;
+      --text-main: #e2e8f0;
+      --text-muted: #8b95a5;
+      --text-sub: #cbd5e1;
+      --accent: #60a5fa;          /* Soft slate blue */
+      --accent-soft: #1e293b;
+      --accent-border: #3b82f6;
+      --success: #34d399;         /* Muted mint */
+      --success-soft: #132d24;
+      --success-border: #059669;
+      --warning: #fbbf24;         /* Soft brass gold */
+      --warning-soft: #2e2614;
+      --warning-border: #d97706;
+      --danger: #f87171;          /* Muted rose red */
+      --danger-soft: #321919;
+      --danger-border: #dc2626;
+      --purple: #c084fc;          /* Muted lilac */
+      --purple-soft: #281d38;
+      --purple-border: #9333ea;
+      --legacy: #94a3b8;
+      --legacy-soft: #1e2430;
+      --legacy-border: #334155;
+      --code-bg: #12141a;
+      --code-border: #242a36;
+      --code-text: #93c5fd;
+      --tag-gemini: #6366f1;
+      --notebook-line: #222733;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      line-height: 1.68;
+      transition: background-color 0.2s, color 0.2s;
+      overflow-x: hidden;
+      letter-spacing: -0.01em;
+    }
+
+    /* Container Layout */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Notebook-Style Sidebar */
+    aside.sidebar {
+      width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 18px 14px;
+      overflow-y: auto;
+      transition: width 0.25s ease, transform 0.25s ease, padding 0.25s ease;
+      z-index: 99;
+      flex-shrink: 0;
+    }
+
+    aside.sidebar.collapsed {
+      width: 0;
+      padding: 0;
+      border-right: none;
+      overflow: hidden;
+      transform: translateX(-100%);
+    }
+
+    .sidebar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--sidebar-border);
+    }
+
+    .sidebar-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sidebar-close-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--sidebar-border);
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+    }
+
+    .sidebar-close-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent);
+    }
+
+    /* Progress Box */
+    .progress-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .progress-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      font-weight: 700;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--code-bg);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.3s ease;
+    }
+
+    /* Filters Group */
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .filter-group-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      padding: 0 4px;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--sidebar-border);
+      padding: 8px 12px;
+      border-radius: 8px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+
+    .search-input:focus {
+      border-color: var(--accent);
+    }
+
+    .filter-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .filter-item-btn {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 5px 9px;
+      border-radius: 6px;
+      font-size: 0.81rem;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.15s ease;
+    }
+
+    .filter-item-btn:hover {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border-color: var(--sidebar-border);
+    }
+
+    .filter-item-btn.active {
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 700;
+      border-color: var(--accent);
+    }
+
+    .filter-item-btn .count-badge {
+      font-size: 0.7rem;
+      padding: 1px 6px;
+      border-radius: 999px;
+      background: rgba(0,0,0,0.07);
+    }
+
+    .filter-item-btn.active .count-badge {
+      background: rgba(255,255,255,0.25);
+      color: #ffffff;
+    }
+
+    /* Main Area */
+    .main-wrapper {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding-bottom: 80px;
+    }
+
+    header.top-header {
+      background: var(--card-bg);
+      border-bottom: 1px solid var(--card-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(8px);
+      padding: 12px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .sidebar-toggle-btn {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sidebar-toggle-btn:hover {
+      border-color: var(--accent);
+    }
+
+    .header-title-box h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      letter-spacing: -0.02em;
+    }
+
+    .header-title-box p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .header-right {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn {
+      background: var(--card-bg);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .btn:hover {
+      border-color: var(--accent);
+    }
+
+    /* Cards List */
+    main.cards-container {
+      max-width: 1040px;
+      margin: 20px auto;
+      padding: 0 24px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Notebook Style Card */
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .question-card:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    .question-card.done {
+      border-left: 5px solid var(--success);
+    }
+
+    .question-card.legacy-card {
+      opacity: 0.85;
+      border-style: dashed;
+      background: var(--code-bg);
+    }
+
+    /* Section Banner for Obsolete Archive */
+    .archive-section-divider {
+      margin: 30px 0 10px 0;
+      padding: 16px 20px;
+      background: var(--legacy-soft);
+      border: 1px dashed var(--legacy-border);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .archive-section-divider h3 {
+      font-size: 1.05rem;
+      color: var(--legacy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .archive-section-divider p {
+      font-size: 0.83rem;
+      color: var(--text-muted);
+    }
+
+    /* Clickable Card Header */
+    .card-header-bar {
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      user-select: none;
+      background: transparent;
+      border-bottom: 1px solid transparent;
+      transition: background 0.15s;
+    }
+
+    .card-header-bar:hover {
+      background: rgba(0,0,0,0.015);
+    }
+
+    .question-card:not(.collapsed) .card-header-bar {
+      border-bottom-color: var(--notebook-line);
+    }
+
+    .card-header-left {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+
+    .badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .q-number-pill {
+      font-size: 0.75rem;
+      font-weight: 800;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: var(--text-main);
+      color: var(--bg);
+      letter-spacing: 0.5px;
+    }
+
+    .level-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 2px 7px;
+      border-radius: 5px;
+      letter-spacing: 0.3px;
+    }
+
+    .lvl-must-know { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger-border); }
+    .lvl-pro { background: var(--purple-soft); color: var(--purple); border: 1px solid var(--purple-border); }
+    .lvl-intermediate { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-border); }
+    .lvl-beginner { background: var(--success-soft); color: var(--success); border: 1px solid var(--success-border); }
+    .lvl-legacy { background: var(--legacy-soft); color: var(--legacy); border: 1px solid var(--legacy-border); }
+
+    .tag-category {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 5px;
+      background: var(--code-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+    }
+
+    .status-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+    }
+
+    .st-critical { background: var(--danger-soft); color: var(--danger); border: 1px solid var(--danger-border); }
+    .st-outdated { background: var(--warning-soft); color: var(--warning); border: 1px solid var(--warning-border); }
+    .st-missing { background: var(--purple-soft); color: var(--purple); border: 1px solid var(--purple-border); }
+    .st-upgrade { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-border); }
+    .st-valid { background: var(--success-soft); color: var(--success); border: 1px solid var(--success-border); }
+    .st-legacy { background: var(--legacy-soft); color: var(--legacy); border: 1px solid var(--legacy-border); }
+
+    .question-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1.35;
+    }
+
+    .chevron-icon {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .question-card.collapsed .chevron-icon {
+      transform: rotate(-90deg);
+    }
+
+    .card-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .check-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      background: var(--code-bg);
+      padding: 5px 11px;
+      border-radius: 6px;
+      border: 1px solid var(--card-border);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+
+    .check-container:hover {
+      border-color: var(--success);
+      color: var(--success);
+    }
+
+    .check-container input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--success);
+      cursor: pointer;
+    }
+
+    /* Expandable Body */
+    .card-body {
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      background: transparent;
+    }
+
+    .question-card.collapsed .card-body {
+      display: none;
+    }
+
+    .orig-answer-box {
+      background: var(--code-bg);
+      border-left: 3px solid #94a3b8;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .orig-answer-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .gemini-answer-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-left: 4px solid var(--accent);
+      padding: 18px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+    }
+
+    .gemini-answer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      border-bottom: 1px dashed var(--card-border);
+      padding-bottom: 8px;
+    }
+
+    .gemini-tag {
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.82rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .lead-insight-pill {
+      background: var(--warning-soft);
+      color: var(--warning);
+      font-size: 0.72rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 5px;
+      border: 1px solid var(--warning-border);
+    }
+
+    .answer-text {
+      font-size: 0.93rem;
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .answer-text p { margin-bottom: 2px; }
+    .answer-text ul, .answer-text ol { margin-left: 20px; display: flex; flex-direction: column; gap: 4px; }
+
+    /* Code Snippets Notebook Style */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 6px;
+      padding: 12px 14px;
+      overflow-x: auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.83rem;
+      color: var(--code-text);
+      line-height: 1.5;
+      margin: 8px 0;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      background: var(--code-bg);
+      padding: 1px 5px;
+      border-radius: 4px;
+      font-size: 0.86em;
+      color: #e11d48;
+    }
+
+    pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    /* Mermaid Diagram Notebook Container with Zoom Capability */
+    .mermaid-container {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 24px 16px 16px 16px;
+      margin: 10px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: zoom-in;
+      position: relative;
+      min-height: 160px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .mermaid-container:hover {
+      border-color: var(--accent);
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+    }
+
+    .zoom-hint-badge {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      padding: 2px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .mermaid {
+      width: 100%;
+      text-align: center;
+      overflow-x: auto;
+    }
+
+    .mermaid svg {
+      width: 100% !important;
+      max-width: 850px !important;
+      height: auto !important;
+      min-height: 130px;
+    }
+
+    .lead-tip-card {
+      background: var(--warning-soft);
+      border-left: 3px solid var(--warning);
+      padding: 10px 14px;
+      border-radius: 0 6px 6px 0;
+      font-size: 0.86rem;
+      color: var(--text-sub);
+    }
+
+    .lead-tip-card strong {
+      color: var(--warning);
+    }
+
+    /* -------------------------------------------------------------
+       BIGGER MODAL VIEW FOR MERMAID DIAGRAMS
+       ------------------------------------------------------------- */
+    .diagram-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .diagram-modal-overlay.active {
+      display: flex;
+    }
+
+    .diagram-modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      width: 95vw;
+      max-width: 1250px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.35);
+      animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--sidebar-bg);
+    }
+
+    .modal-title-area h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .modal-title-area p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .modal-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-ctrl-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--text-main);
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 32px;
+      transition: all 0.15s;
+    }
+
+    .modal-ctrl-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .modal-close-btn {
+      background: var(--danger-soft);
+      border: 1px solid var(--danger-border);
+      color: var(--danger);
+      font-weight: 800;
+      padding: 5px 12px;
+    }
+
+    .modal-close-btn:hover {
+      background: var(--danger);
+      color: #ffffff;
+    }
+
+    .modal-body {
+      flex: 1;
+      overflow: auto;
+      padding: 30px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: var(--bg);
+      user-select: none;
+    }
+
+    .modal-diagram-container {
+      transform-origin: center center;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .modal-diagram-container svg {
+      width: 100% !important;
+      max-width: 1150px !important;
+      height: auto !important;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-muted);
+    }
+
+    @media (max-width: 900px) {
+      aside.sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        box-shadow: 10px 0 30px rgba(0,0,0,0.25);
+      }
+      aside.sidebar:not(.collapsed) {
+        width: 300px;
+      }
+      main.cards-container {
+        padding: 0 16px;
+      }
+      header.top-header {
+        padding: 10px 16px;
+      }
+      .diagram-modal-box {
+        width: 98vw;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- COLLAPSIBLE NOTEBOOK SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">
+        <span>📖 Interview Notebook</span>
+      </div>
+      <button class="sidebar-close-btn" onclick="toggleSidebar()" title="Collapse sidebar">✕</button>
+    </div>
+
+    <!-- Search Input -->
+    <div class="filter-group">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search Q#, topics, code..." oninput="applyFilters()">
+    </div>
+
+    <!-- Master Progress Box -->
+    <div class="progress-box">
+      <div class="progress-labels">
+        <span id="progressSummary">0 of 58 mastered</span>
+        <span id="progressPercent">0%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- Level Filter (Must Know, Pro, Intermediate, Beginner, Legacy) -->
+    <div class="filter-group">
+      <div class="filter-group-label">Difficulty / Priority</div>
+      <div class="filter-list" id="levelFilters">
+        <button class="filter-item-btn active" data-lvl="all" onclick="setLevelFilter('all')">
+          <span>All Topics</span>
+          <span class="count-badge" id="cnt-all-lvl">58</span>
+        </button>
+        <button class="filter-item-btn" data-lvl="must-know" onclick="setLevelFilter('must-know')">
+          <span>🔥 Must Know</span>
+          <span class="count-badge" id="cnt-must-know">0</span>
+        </button>
+        <button class="filter-item-btn" data-lvl="pro" onclick="setLevelFilter('pro')">
+          <span>🟣 Pro (Staff/Lead)</span>
+          <span class="count-badge" id="cnt-pro">0</span>
+        </button>
+        <button class="filter-item-btn" data-lvl="intermediate" onclick="setLevelFilter('intermediate')">
+          <span>🔵 Intermediate</span>
+          <span class="count-badge" id="cnt-intermediate">0</span>
+        </button>
+        <button class="filter-item-btn" data-lvl="beginner" onclick="setLevelFilter('beginner')">
+          <span>🟢 Beginner</span>
+          <span class="count-badge" id="cnt-beginner">0</span>
+        </button>
+        <button class="filter-item-btn" data-lvl="legacy" onclick="setLevelFilter('legacy')">
+          <span>📦 Legacy Archive</span>
+          <span class="count-badge" id="cnt-legacy">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Status Filters -->
+    <div class="filter-group">
+      <div class="filter-group-label">Validation Status</div>
+      <div class="filter-list" id="statusFilters">
+        <button class="filter-item-btn active" data-st="all" onclick="setStatusFilter('all')">
+          <span>All Statuses</span>
+          <span class="count-badge">58</span>
+        </button>
+        <button class="filter-item-btn" data-st="critical" onclick="setStatusFilter('critical')">
+          <span>🚨 Critical Traps</span>
+          <span class="count-badge" id="cnt-critical">0</span>
+        </button>
+        <button class="filter-item-btn" data-st="missing" onclick="setStatusFilter('missing')">
+          <span>✨ Missing / New 2026</span>
+          <span class="count-badge" id="cnt-missing">0</span>
+        </button>
+        <button class="filter-item-btn" data-st="upgrade" onclick="setStatusFilter('upgrade')">
+          <span>🚀 Lead Upgrades</span>
+          <span class="count-badge" id="cnt-upgrade">0</span>
+        </button>
+        <button class="filter-item-btn" data-st="pending" onclick="setStatusFilter('pending')">
+          <span>⏳ Pending / Unread</span>
+          <span class="count-badge" id="cnt-pending">0</span>
+        </button>
+        <button class="filter-item-btn" data-st="done" onclick="setStatusFilter('done')">
+          <span>✅ Completed</span>
+          <span class="count-badge" id="cnt-done">0</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Technical Domain -->
+    <div class="filter-group">
+      <div class="filter-group-label">Technical Domain</div>
+      <div class="filter-list" id="categoryFilters">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN WRAPPER -->
+  <div class="main-wrapper">
+    <header class="top-header">
+      <div class="header-left">
+        <button class="sidebar-toggle-btn" onclick="toggleSidebar()" id="sidebarToggleBtn">
+          <span>☰</span> <span>Filters</span>
+        </button>
+        <div class="header-title-box">
+          <h1>iOS Tech Lead Master Prep &bull; Study Notebook (2026 Edition)</h1>
+          <p id="filterSummary">58 Questions &bull; Click card to collapse &bull; Tap diagrams to zoom</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <button class="btn" onclick="toggleAllCards(true)">Expand All</button>
+        <button class="btn" onclick="toggleAllCards(false)">Collapse All</button>
+        <button class="btn" onclick="toggleTheme()" id="themeBtn">🌓 Theme</button>
+      </div>
+    </header>
+
+    <main class="cards-container" id="cardsList">
+      <!-- Question cards injected via JS -->
+    </main>
+  </div>
+</div>
+
+<!-- DIAGRAM MODAL ZOOM VIEWER -->
+<div class="diagram-modal-overlay" id="diagramModal" onclick="closeModalOnBackdrop(event)">
+  <div class="diagram-modal-box">
+    <div class="modal-header">
+      <div class="modal-title-area">
+        <h3 id="modalTitle">Architecture Diagram</h3>
+        <p>Use controls to zoom &bull; Click outside or press ESC to dismiss</p>
+      </div>
+      <div class="modal-controls">
+        <button class="modal-ctrl-btn" onclick="zoomDiagram(-0.2)" title="Zoom Out">-</button>
+        <button class="modal-ctrl-btn" onclick="resetDiagramZoom()" id="zoomLevelDisplay">100%</button>
+        <button class="modal-ctrl-btn" onclick="zoomDiagram(0.2)" title="Zoom In">+</button>
+        <button class="modal-ctrl-btn modal-close-btn" onclick="closeDiagramModal()" title="Close">✕</button>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-diagram-container" id="modalDiagramContainer">
+        <!-- SVG injected dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Safely initialize Mermaid
+  if (typeof mermaid !== 'undefined') {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'neutral',
+      securityLevel: 'loose',
+      flowchart: { curve: 'linear' }
+    });
+  }
+
+  function triggerMermaid(delay = 100) {
+    if (typeof mermaid !== 'undefined') {
+      setTimeout(() => {
+        try { mermaid.run(); } catch (e) { /* ignore */ }
+      }, delay);
+    }
+  }
+
+  // -------------------------------------------------------------
+  // MASTER QUESTIONS DATA (58 Total)
+  // Numbered Q01 - Q58
+  // Active questions first, Legacy/Obsolete archived at bottom
+  // -------------------------------------------------------------
+  const questionsData = [
+    // ---------------------------------------------------------
+    // PART 1: 2026 MODERN TECH LEAD ADDITIONS & SYSTEM DESIGN
+    // ---------------------------------------------------------
+    {
+      id: "q-tca",
+      qNum: "Q01",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "Modern Architecture (2026)",
+      page: "2026 Lead Addition",
+      title: "The Composable Architecture (TCA) at Enterprise Scale",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>In production at scale, predictable state mutations are everything—especially in a banking app where a race condition could display the wrong account balance. We adopt TCA because it enforces a strict unidirectional data flow and pushes side effects to the absolute edge of the system.</p>
+        <p>By using the <code>@Reducer</code> macro, we encapsulate State, Action, and environment dependencies neatly. The beauty of TCA is how it handles dependencies via <code>@Dependency</code>; it forces you to mock every dependency in tests, ensuring exhaustive, deterministic unit testing where you assert exactly how state changes and what side effects execute over time.</p>
+        
+        <pre><code>import ComposableArchitecture
+
+@Reducer
+struct TransferFeature {
+    @ObservableState
+    struct State: Equatable {
+        var amount: Double = 0.0
+        var isTransferring = false
+    }
+
+    enum Action {
+        case submitTransfer
+        case transferResponse(Result&lt;Void, Error&gt;)
+    }
+
+    @Dependency(\\.transferClient) var transferClient
+
+    var body: some ReducerOf&lt;Self&gt; {
+        Reduce { state, action in
+            switch action {
+            case .submitTransfer:
+                state.isTransferring = true
+                return .run { [amount = state.amount] send in
+                    await send(.transferResponse(Result {
+                        try await self.transferClient.transfer(amount)
+                    }))
+                }
+            case .transferResponse(.success):
+                state.isTransferring = false
+                return .none
+            case .transferResponse(.failure):
+                state.isTransferring = false
+                return .none
+            }
+        }
+    }
+}</code></pre>
+      `,
+      diagram: `
+sequenceDiagram
+    participant UI as SwiftUI View
+    participant Store as TCA Store
+    participant Reducer as Reducer
+    participant Env as Dependencies / API
+    UI->>Store: View sends Action (.submitTransfer)
+    Store->>Reducer: Forward Action + Current State
+    Reducer-->>Store: Mutate State (isTransferring = true)
+    Store-->>UI: State updated (Show Spinner)
+    Reducer->>Env: Execute side-effect (API Call)
+    Env-->>Store: Feed Action back (.transferResponse)
+    Store->>Reducer: Forward Action + Current State
+    Reducer-->>Store: Mutate State (isTransferring = false)
+    Store-->>UI: State updated (Hide Spinner)
+      `,
+      leadTip: "Deep understanding of isolating side effects. Mentioning the <code>@Dependency</code> system and <code>TestStore</code> is critical. Interviewers want a tech lead who prioritizes 100% deterministic testability."
+    },
+    {
+      id: "q-tuist",
+      qNum: "Q02",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "Tooling & Infrastructure",
+      page: "2026 Lead Addition",
+      title: "Tuist & Project Generation at Enterprise Scale",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>In simple words, managing a monolithic <code>.pbxproj</code> file with 50+ iOS engineers is a fast track to git conflict hell and broken builds. At enterprise scale, we don't commit Xcode projects to version control anymore. Instead, we use <strong>Tuist</strong> to generate them on the fly.</p>
+        <p>This gives us deterministic project structures and lets us define micro-feature templates so every team builds modules exactly the same way. The classic gotcha with massive apps is the 15+ minute build time. By leveraging Tuist's <strong>binary caching</strong> (pre-compiling modules that haven't changed into <code>.xcframeworks</code>), we can cut warm build times down from 15 minutes to under 2 minutes, radically improving developer productivity.</p>
+        
+        <pre><code>import ProjectDescription
+
+// Standardized Tuist template for an enterprise micro-feature
+let project = Project(
+    name: "FeatureAccounts",
+    targets: [
+        .target(
+            name: "FeatureAccounts",
+            destinations: .iOS,
+            product: .framework,
+            bundleId: "com.adib.feature.accounts",
+            sources: ["Sources/**"],
+            dependencies: [
+                .project(target: "CoreNetwork", path: "../../Core/Network"),
+                .project(target: "DesignSystem", path: "../../UI/DesignSystem")
+            ]
+        ),
+        .target(
+            name: "FeatureAccountsTests",
+            destinations: .iOS,
+            product: .unitTests,
+            bundleId: "com.adib.feature.accounts.tests",
+            sources: ["Tests/**"],
+            dependencies: [.target(name: "FeatureAccounts")]
+        )
+    ]
+)</code></pre>
+      `,
+      diagram: `
+graph TD
+    A[Manifests: Project.swift] --> B(Tuist CLI)
+    B --> C{Cache Hit?}
+    C -->|Yes| D[Pull Pre-compiled .xcframework]
+    C -->|No| E[Compile Source Code]
+    D --> F[Generate .xcodeproj / .xcworkspace]
+    E --> F
+    F --> G[Fast Incremental Build: 2 min vs 15 min]
+      `,
+      leadTip: "They want to hear that you understand developer ROI. Mentioning 'binary caching', 'graph traversal', and eliminating .pbxproj conflicts proves you know how to scale a mobile engineering team."
+    },
+    {
+      id: "q-swiftui-observable",
+      qNum: "Q03",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "SwiftUI & Modern UI",
+      page: "2026 Lead Addition",
+      title: "SwiftUI State Management Evolution: @StateObject vs @Observable",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>In simple words, the shift to <code>@Observable</code> in iOS 17/18 was a massive leap for SwiftUI performance. Previously, with <code>ObservableObject</code> and <code>@Published</code>, any change to a published property would invalidate every view observing that object, regardless of whether the view actually read that specific property.</p>
+        <p>With <code>@Observable</code>, SwiftUI tracks property access at a surgical, per-property level within the <code>body</code>. If a view doesn't read a property, it doesn't re-render when that property changes. It requires zero Combine boilerplate and drastically reduces CPU cycles on view updates.</p>
+
+        <pre><code>import SwiftUI
+import Observation
+
+// Modern iOS 17+ Approach
+@Observable
+final class AccountViewModel {
+    var balance: Double = 0.0
+    var transactions: [String] = []
+    
+    // A View only re-renders if it reads balance. 
+    // Updating transactions won't trigger a re-render for a balance-only view!
+}</code></pre>
+      `,
+      diagram: `
+flowchart TD
+    subgraph ObservableObject [Pre-iOS 17: ObservableObject]
+        A1[Change Property A] --> B1[ObjectWillChange Publisher]
+        B1 --> C1[Invalidates ALL Views observing object!]
+    end
+    subgraph ObservableMacro [iOS 17+: @Observable]
+        A2[Change Property A] --> B2[Observation Registrar]
+        B2 --> C2[Invalidates ONLY Views reading Property A!]
+    end
+      `,
+      leadTip: "Show you understand WHY @Observable exists: granular property-level observation eliminating view invalidation cascades, and how it simplifies dependency injection via <code>@Environment</code>."
+    },
+    {
+      id: "q-swiftui-perf",
+      qNum: "Q04",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "SwiftUI & Modern UI",
+      page: "2026 Lead Addition",
+      title: "SwiftUI View Performance, Identity & Self._printChanges()",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>In SwiftUI, a view's identity determines whether the framework updates an existing view or destroys it and creates a brand new one. The classic gotcha is messing with Structural Identity—like using <code>AnyView</code> or wrapping views in unnecessary <code>if/else</code> branches instead of a single view structure.</p>
+        <p>When you use <code>AnyView</code>, SwiftUI loses the type information and destroys the view state, causing performance drops and animation glitches. For lists or dynamic content, we rely on Explicit Identity using <code>.id()</code>. When debugging performance drops in complex financial dashboards, my first move is dropping <code>Self._printChanges()</code> in the body to catch unintended re-render cascades.</p>
+
+        <pre><code>struct TransactionListView: View {
+    let transactions: [Transaction]
+    
+    var body: some View {
+        // Debugging re-renders in Xcode console
+        let _ = Self._printChanges()
+        
+        List(transactions) { tx in
+            TransactionRow(tx: tx)
+                // Explicit identity for smooth diffing & animations
+                .id(tx.id)
+        }
+    }
+}</code></pre>
+      `,
+      diagram: `
+graph TD
+    A[View Update Triggered] --> B{Same Identity?}
+    B -- Yes --> C[Update View Value & State Preserved]
+    B -- No --> D[Destroy Old View, Create New View]
+    D --> E[State Lost / Severe Re-render Cascade!]
+      `,
+      leadTip: "Senior engineers don't just build UI; they optimize it. Mentioning <code>Self._printChanges()</code> or Instruments (SwiftUI template) proves you have battle-tested debugging strategies."
+    },
+    {
+      id: "q-swiftui-navigation",
+      qNum: "Q05",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "SwiftUI & Modern UI",
+      page: "2026 Lead Addition",
+      title: "Modern SwiftUI Navigation: NavigationStack & NavigationPath",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>Navigation in SwiftUI used to be a nightmare of nested <code>NavigationLink</code>s that coupled UI tightly with routing logic. The deprecation of <code>NavigationView</code> for <code>NavigationStack</code> and <code>NavigationPath</code> solved this by treating navigation state as pure data.</p>
+        <p>In modern architecture, I build a Coordinator (or Router) class that holds a <code>NavigationPath</code>. The views just send intents ('User tapped transfer'), and the Coordinator mutates the path. This allows us to handle complex programmatic deep-linking—like jumping straight to a specific trade confirmation screen from a push notification—simply by appending the right enum values to our path array.</p>
+
+        <pre><code>@Observable
+final class AppRouter {
+    var path = NavigationPath()
+    
+    func navigateToTrade(id: String) {
+        path.append(Route.tradeDetails(id: id))
+    }
+    
+    func popToRoot() {
+        path.removeLast(path.count)
+    }
+}
+
+enum Route: Hashable {
+    case accountSummary
+    case tradeDetails(id: String)
+}</code></pre>
+      `,
+      diagram: `
+flowchart LR
+    A[Push Notification] --> B[AppRouter]
+    C[User Button Action] --> B
+    B --> |Mutates| D[NavigationPath Data Array]
+    D --> |Drives| E[NavigationStack UI]
+      `,
+      leadTip: "Decoupling UI from routing logic. The 'Coordinator Pattern in SwiftUI' using data-driven <code>NavigationPath</code> is the gold standard answer."
+    },
+    {
+      id: "q-combine-rxswift-concurrency",
+      qNum: "Q06",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "Reactive & Concurrency",
+      page: "2026 Lead Addition",
+      title: "Combine vs RxSwift vs Swift Concurrency (AsyncSequence)",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>This isn't an 'either/or'—it's about using the right tool for the job. RxSwift paved the way, Combine is Apple's native reactive response, but Swift Concurrency (<code>async/await</code>, <code>AsyncStream</code>) is the definitive future.</p>
+        <p>For standard asynchronous work like fetching a user's portfolio, <code>async/await</code> completely replaces Combine; it's cleaner, avoids retain cycles, and gives us compile-time data race safety via actors and <code>Sendable</code> checking in Swift 6. However, for complex event streams over time—like managing a live web-socket feed of stock prices with debouncing, throttling, and merging streams—Combine still excels because of its mature operator ecosystem.</p>
+
+        <pre><code>// One-shot: Use Async/Await (Replaces Single/Future)
+func fetchBalance() async throws -> Double { /* ... */ }
+
+// Event Stream: Bridging Combine to Modern AsyncStream
+func priceStream() -> AsyncStream&lt;Double&gt; {
+    AsyncStream { continuation in
+        let sub = webSocket.pricePublisher
+            .sink { continuation.yield($0) }
+        
+        continuation.onTermination = { @Sendable _ in 
+            sub.cancel() 
+        }
+    }
+}</code></pre>
+      `,
+      diagram: `
+graph TD
+    A[Task Type] --> B{One-shot or Stream?}
+    B -- One-shot: API Call --> C[async/await (Clean, Safe)]
+    B -- Stream: Events over time --> D{Complex Operators Needed?}
+    D -- Yes: Debounce, Throttle --> E[Combine / RxSwift]
+    D -- No: Simple iteration --> F[AsyncStream / AsyncSequence]
+      `,
+      leadTip: "Nuance and pragmatism. A junior dev wants to rewrite everything in the newest tech. A Tech Lead knows Combine still has superior operators for reactive streams, while Swift Concurrency offers unmatched safety for async tasks."
+    },
+    {
+      id: "q-combine-backpressure",
+      qNum: "Q07",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Reactive & Concurrency",
+      page: "2026 Lead Addition",
+      title: "Combine Backpressure & Critical Operators (debounce, switchToLatest)",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>Backpressure is conceptually how a subscriber tells a publisher, 'Hold on, I can only process 5 items right now.' In Combine, <code>Subscribers.Demand</code> negotiates this.</p>
+        <p>In high-frequency environments like trading or banking search, we use advanced operators to protect the app: <code>debounce</code> waits for the user to pause typing before firing. <code>throttle</code> gives you the latest price every 0.5s to preserve CPU. And <strong><code>switchToLatest</code></strong> is the holy grail: if a user types 'A' then 'AP' then 'AAPL', <code>switchToLatest</code> automatically cancels the inflight network requests for 'A' and 'AP', only resolving 'AAPL'. It prevents out-of-order race conditions where an older response overwrites a newer one!</p>
+
+        <pre><code>searchSubject
+    .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
+    .removeDuplicates()
+    .map { query in
+        api.fetchStocksPublisher(query: query) // Returns new URLSession publisher
+    }
+    .switchToLatest() // Cancels previous inflight request immediately!
+    .sink { results in self.updateUI(results) }
+    .store(in: &cancellables)</code></pre>
+      `,
+      diagram: `
+sequenceDiagram
+    participant User
+    participant Subject
+    participant Network
+    User->>Subject: Types "A"
+    User->>Subject: Types "AA"
+    User->>Subject: Types "AAPL" (pauses)
+    Note over Subject: Debounce waits 300ms
+    Subject->>Network: Request "AAPL" (cancels "A" & "AA")
+    Network-->>Subject: Results for "AAPL"
+      `,
+      leadTip: "Mentioning <code>switchToLatest</code> to solve the classic 'out-of-order network response' bug is exactly what interviewers listen for at the Staff/Lead level."
+    },
+    {
+      id: "q-micro-features",
+      qNum: "Q08",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "Modern Architecture (2026)",
+      page: "2026 Lead Addition",
+      title: "Micro-Features & Multi-Module Architecture",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>When you have dozens of engineers, a single-target app becomes a bottleneck. We structure enterprise apps into layered micro-features: Foundation (models, utilities), Core (network, database), Design System (reusable UI), and Feature modules (Accounts, Payments, Cards).</p>
+        <p>The golden rule is that <strong>Feature modules can NEVER depend on each other horizontally</strong>—they communicate through a coordinator or routing interface to prevent circular dependencies. Working on the 'Payments' module doesn't trigger a rebuild of the 'Accounts' module.</p>
+      `,
+      diagram: `
+graph TD
+    App[App Target] --> FP(Feature: Payments)
+    App --> FA(Feature: Accounts)
+    App --> FC(Feature: Cards)
+    FP -.->|Interface Only| Routing(Feature Routing Abstraction)
+    FA -.->|Interface Only| Routing
+    FP --> CN(Core Network)
+    FP --> DS(Design System)
+    FA --> CN
+    FA --> DS
+    CN --> FM(Foundation Models)
+    DS --> FM
+      `,
+      leadTip: "A clear strategy for breaking up a monolith. Explaining how to enforce dependency boundaries and avoiding horizontal coupling via routing interfaces."
+    },
+    {
+      id: "q-sdui",
+      qNum: "Q09",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Modern Architecture (2026)",
+      page: "2026 Lead Addition",
+      title: "Server-Driven UI (SDUI) in Banking",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>Banking apps need the agility to push new promotional campaigns, regulatory banners, or reorder dashboard widgets without waiting for Apple's App Store review. We achieve this through Server-Driven UI (SDUI).</p>
+        <p>The server sends down a JSON payload containing an array of 'Component' contracts. The iOS app acts as a dumb renderer engine mapping these JSON contracts to SwiftUI views. The classic gotcha is backward compatibility—if the server sends a new <code>CarouselComponent</code> to an older app version, the app must gracefully fall back to <code>EmptyView</code> rather than crashing during decoding.</p>
+
+        <pre><code>enum UIComponentType: String, Decodable {
+    case header = "HEADER"
+    case balanceCard = "BALANCE_CARD"
+    case unknown
+}
+
+struct AnyComponent: Decodable {
+    let type: UIComponentType
+    let uiModel: Any
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let typeStr = try container.decode(String.self, forKey: .type)
+        self.type = UIComponentType(rawValue: typeStr) ?? .unknown
+        switch self.type {
+        case .header: self.uiModel = try container.decode(HeaderModel.self, forKey: .data)
+        case .balanceCard: self.uiModel = try container.decode(BalanceModel.self, forKey: .data)
+        case .unknown: self.uiModel = EmptyModel() // Graceful fallback!
+        }
+    }
+}</code></pre>
+      `,
+      diagram: `
+graph LR
+    Backend[Server Microservice] -- "JSON (Versioned Schema)" --> API[Network Layer]
+    API --> Decoder[SDUI Decoder Engine]
+    Decoder -- "Registry Match" --> ViewFactory[SwiftUI View Factory]
+    ViewFactory -- "Renders" --> View1[HeaderView]
+    ViewFactory -- "Renders" --> View2[BalanceCardView]
+    ViewFactory -- "Fallback" --> View3[EmptyView - No Crash!]
+      `,
+      leadTip: "Highlight awareness of SDUI downsides: handling unknown types gracefully without crashing, security validation, and caching layouts to prevent UI jumping."
+    },
+    {
+      id: "q-offline-first",
+      qNum: "Q10",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Modern Architecture (2026)",
+      page: "2026 Lead Addition",
+      title: "Offline-First Architecture & Data Synchronization Engines",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>Mobile networks are inherently flaky. If a user categorizes a transaction on the metro, the app shouldn't block the UI with an endless spinner. We use an offline-first architecture using a local database as the single source of truth.</p>
+        <p>We apply optimistic UI updates locally so the user feels immediate feedback. Behind the scenes, the mutation is written to a persistent background queue. The sync engine then attempts network delivery with exponential backoff. Conflicts are resolved via 'last-write-wins' using server timestamps.</p>
+      `,
+      diagram: `
+graph TD
+    User((User)) -->|Action| UI[SwiftUI View]
+    UI -->|1. Write| LocalDB[(Local DB - Source of Truth)]
+    LocalDB -->|2. Observe| UI[Instant Optimistic Update]
+    LocalDB -->|3. Pending Mutation| Queue[Sync Engine Queue]
+    Queue -->|4. Push (Background)| Server[(Remote Server)]
+    Server -.->|5. Ack / Conflict Resolution| Queue
+      `,
+      leadTip: "Calling out the separation between UI state (which observes the local DB) and Network state (which syncs the DB to the backend) is the winning architectural answer."
+    },
+    {
+      id: "q-metrickit",
+      qNum: "Q11",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Performance & Instruments",
+      page: "2026 Lead Addition",
+      title: "MetricKit Telemetry & Production Observability at Scale",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>Shipping code is only half the job; operating it in production is where a Tech Lead earns their stripes. We don't just rely on reactive crashlytics—we proactively monitor performance using Apple's native <strong>MetricKit</strong> to avoid 3rd party SDK bloat.</p>
+        <p>MetricKit delivers aggregated telemetry on <strong>Hang Rates</strong> (main thread blocks over 250ms), battery drain, thermal state, and Out-of-Memory (OOM) Jetsam kills directly from real customer devices.</p>
+
+        <pre><code>import MetricKit
+
+final class TelemetryManager: NSObject, MXMetricManagerSubscriber {
+    static let shared = TelemetryManager()
+    
+    func start() { MXMetricManager.shared.add(self) }
+    
+    func didReceive(_ payloads: [MXMetricPayload]) {
+        for payload in payloads {
+            if let hangMetrics = payload.applicationTimeMetrics?.appHangTime {
+                // Log and alert on main thread hangs > 250ms
+            }
+        }
+    }
+}</code></pre>
+      `,
+      diagram: `
+graph LR
+    App[iOS App Runtime] -->|Daily Telemetry| OS[iOS MetricKit Daemon]
+    OS -- MXMetricPayload --> Sub[MXMetricManagerSubscriber]
+    Sub --> Logger[Telemetry Service]
+    Logger -->|Batch Upload| Backend[Datadog / Grafana]
+    Dev[Tech Lead] -->|Analyzes Hangs & OOMs| Backend
+      `,
+      leadTip: "Distinguishing between local debugging (Instruments) and production telemetry (MetricKit) highlights senior-level operational awareness."
+    },
+    {
+      id: "q-rx-migration",
+      qNum: "Q12",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Reactive & Concurrency",
+      page: "2026 Lead Addition",
+      title: "Migrating Legacy Reactive Codebases (RxSwift/Combine) to Swift Concurrency",
+      origAnswer: "Modern 2026 Tech Lead Addition.",
+      status: "missing",
+      statusText: "✨ 2026 Lead Topic",
+      geminiAnswer: `
+        <p>Migrating a massive Rx or Combine codebase to Swift Concurrency is never a 'stop the world' rewrite. We do it incrementally using the <strong>Strangler Fig pattern</strong>.</p>
+        <p>We start at the bottom—the network and database layers—and expose <code>async/await</code> interfaces. To prevent breaking legacy UI layers that still expect Observables, we use bridging: wrapping completion handlers using <code>withCheckedThrowingContinuation</code>, and wrapping streams into <code>AsyncStream</code>.</p>
+
+        <pre><code>// Bridging legacy callback-based SDK to async/await
+func fetchAccountDetails(id: String) async throws -> Account {
+    try await withCheckedThrowingContinuation { continuation in
+        legacySDK.getAccount(id: id) { result, error in
+            if let error = error {
+                continuation.resume(throwing: error)
+            } else if let result = result {
+                continuation.resume(returning: result)
+            }
+        }
+    }
+}</code></pre>
+      `,
+      diagram: `
+flowchart TD
+    subgraph Legacy UI
+        A[View Controller / ViewModel - RxSwift]
+    end
+    subgraph Bridge Layer
+        B[AsyncStream / withCheckedContinuation]
+    end
+    subgraph Modern Core
+        C[Swift Concurrency Network Layer]
+        D[Actors for Shared State]
+    end
+    A --> B
+    B --> C
+    B --> D
+      `,
+      leadTip: "Showing you know how to manage the RISK of an architectural migration using bridging mechanisms is what gets you hired as a Tech Lead."
+    },
+
+    // ---------------------------------------------------------
+    // PART 2: ACTIVE CORE TOPICS (FROM ORIGINAL NOTES)
+    // ---------------------------------------------------------
+    {
+      id: "q-elevator",
+      qNum: "Q13",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "System Design & OOP",
+      page: "Page 1 (#4)",
+      title: "Implement Elevator System using OOP concepts",
+      origAnswer: "Listed in check-out topic list (#4). No answer provided in the notes.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p>When an interviewer asks this, they want to see if you can break a system into modular, single-responsibility components and handle real-world concurrency and edge cases.</p>
+        <p>We use the <strong>SCAN / LOOK scheduling algorithm</strong>. The car keeps traveling in its current direction, servicing all pending requests in that direction until no more requests remain ahead, then reverses direction to prevent starvation.</p>
+        <pre><code>enum Direction { case up, down, idle }
+
+// Tech Lead Concurrency: Use Swift Actor to prevent race conditions on simultaneous requests
+actor ElevatorController {
+    private var cars: [ElevatorCar]
+
+    func requestElevator(fromFloor: Int, direction: Direction) {
+        let bestCar = findOptimalCar(for: fromFloor, direction: direction)
+        bestCar.requests.insert(Request(targetFloor: fromFloor, direction: direction))
+    }
+}</code></pre>
+      `,
+      diagram: `
+graph LR
+    P[Passenger Request] --> D[Elevator Dispatcher / Controller]
+    D -- SCAN Algorithm --> C1[Car #1 - Moving Up]
+    D -- Assign Nearest --> C2[Car #2 - Idle Floor 4]
+    C1 --> F1[Floor Queue: 5, 8, 10]
+      `,
+      leadTip: "Separate the <strong>Dispatcher (brain)</strong> from the <strong>Elevator Car (hardware)</strong> and mention the <strong>SCAN algorithm</strong>."
+    },
+    {
+      id: "q-db-vs-files",
+      qNum: "Q14",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "Persistence & Core Data",
+      page: "Page 1 (#5)",
+      title: "Why do we need a DB? Why can’t we use files to store information?",
+      origAnswer: "Listed in check-out topic list (#5). No answer provided in the notes.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p>In simple words, files are fine for flat, simple configs like <code>UserDefaults</code>, but fail for real data: 1) <strong>Memory & Faulting</strong> (files load completely into RAM; databases fault 10 rows at a time), 2) <strong>Search Speed</strong> (O(N) file scan vs O(log N) B-Tree indexes), 3) <strong>ACID & Crash Safety</strong> (atomic transactions vs corrupted half-written files), and 4) <strong>Concurrency</strong> (WAL multi-thread support).</p>
+      `,
+      leadTip: "Explain <strong>Faulting</strong> in Core Data: keeping lightweight placeholder objects in RAM and fetching full attributes from disk only when touched."
+    },
+    {
+      id: "q-keychain-credentials",
+      qNum: "Q15",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "Security & Networking",
+      page: "Page 35",
+      title: "Best practice to store username and password on iPhone?",
+      origAnswer: "1. Using iOS Keychain service. 2. Keychain is a secured encrypted container. 3. Other options include NSUserDefaults and plists.",
+      status: "critical",
+      statusText: "🚨 CRITICAL: Never use UserDefaults!",
+      geminiAnswer: `
+        <p><strong>Never store credentials in UserDefaults or .plist!</strong> They are unencrypted files in the sandbox. Use <strong>iOS Keychain Services</strong> with <code>kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly</code>, paired with the <strong>Secure Enclave</strong> and <code>LocalAuthentication</code> for biometrics.</p>
+        <pre><code>let query: [String: Any] = [
+    kSecClass as String: kSecClassGenericPassword,
+    kSecAttrAccount as String: "user_auth_token",
+    kSecValueData as String: data,
+    kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
+]</code></pre>
+      `,
+      leadTip: "Highlight accessibility attributes like <code>kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly</code> to prove banking-grade security knowledge."
+    },
+    {
+      id: "q-view-lifecycle",
+      qNum: "Q16",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "App Lifecycle & UIKit",
+      page: "Page 38-39",
+      title: "View Controller Lifecycle & viewIsAppearing",
+      origAnswer: "loadView -> viewDidLoad -> viewWillAppear -> viewWillDisappear -> viewDidDisappear -> viewDidUnload.",
+      status: "critical",
+      statusText: "🚨 CRITICAL: viewDidUnload Dead",
+      geminiAnswer: `
+        <p>Modern order: <code>loadView</code> -> <code>viewDidLoad</code> -> <code>viewWillAppear</code> -> <strong><code>viewIsAppearing</code></strong> (traits and geometry guaranteed!) -> <code>viewWillLayoutSubviews</code> / <code>viewDidLayoutSubviews</code> -> <code>viewDidAppear</code> -> <code>viewWillDisappear</code> -> <code>viewDidDisappear</code> -> <code>deinit</code>.</p>
+      `,
+      diagram: `
+graph TD
+    A[loadView] --> B[viewDidLoad - Initial setup, bindings]
+    B --> C[viewWillAppear - Fast status bar updates]
+    C --> D[viewIsAppearing - Final bounds & traits ready!]
+    D --> E[viewWillLayoutSubviews / viewDidLayoutSubviews]
+    E --> F[viewDidAppear - Start animations, analytics]
+    F --> G[viewWillDisappear]
+    G --> H[viewDidDisappear]
+    H --> I[deinit - Reclaimed by ARC]
+      `,
+      leadTip: "Mentioning <code>viewIsAppearing</code> proves you follow modern UIKit advancements."
+    },
+    {
+      id: "q-solid-overview",
+      qNum: "Q17",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "Architecture & SOLID",
+      page: "Page 11-16",
+      title: "SOLID Principles in Swift & Bug Fix on Page 16",
+      origAnswer: "S, O, L, I, D. Page 16 had syntax error in DIP example.",
+      status: "critical",
+      statusText: "🚨 Syntax Error Fixed on Page 16",
+      geminiAnswer: `
+        <p>S: Single Responsibility. O: Open-Closed. L: Liskov Substitution. I: Interface Segregation. D: Dependency Inversion.</p>
+        <p><strong>Fixed code for Page 16:</strong> <code>NotificationManager</code> takes <code>services: [Notifiable]</code> and broadcasts cleanly without compile errors.</p>
+      `,
+      diagram: `
+classDiagram
+    class NotificationManager {
+        -services: [Notifiable]
+        +broadcast(message: String)
+    }
+    class Notifiable {
+        <<interface>>
+        +send(message: String)
+    }
+    class EmailService { +send() }
+    class SMSService { +send() }
+    NotificationManager --> Notifiable : depends on abstraction (DIP)
+    EmailService ..|> Notifiable
+    SMSService ..|> Notifiable
+      `,
+      leadTip: "Tie SOLID directly to <strong>Unit Testing</strong>: DIP allows injecting Mock protocols in tests."
+    },
+    {
+      id: "q-struct-class-actor",
+      qNum: "Q18",
+      level: "must-know",
+      levelText: "🔥 Must Know",
+      category: "Core Swift",
+      page: "Page 37",
+      title: "struct vs class vs actor & Actor Reentrancy",
+      origAnswer: "Struct is value type, class is reference type, actor is reference type handling concurrency.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p><code>struct</code>: Value type (Stack, CoW). <code>class</code>: Reference type (Heap, ARC). <code>actor</code>: Isolated Reference type preventing data races.</p>
+        <p><strong>Actor Reentrancy Trap:</strong> Inside an actor, when you call <code>await</code>, execution suspends. Other calls can enter the actor and alter state while it is suspended! Always re-verify state after <code>await</code> points.</p>
+      `,
+      leadTip: "Mention <code>nonisolated</code>: used on actor methods that only access immutable properties or conform to synchronous protocols."
+    },
+    {
+      id: "q-ssl-pinning",
+      qNum: "Q19",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Security & Networking",
+      page: "Page 53, 55",
+      title: "SSL Pinning: Certificate vs Public Key Pinning & Rotation",
+      origAnswer: "Mentions certificate expiry scenario (use public keys), challenge handlers, SecTrust.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>In banking, we pin the <strong>Public Key (SPKI)</strong> instead of the leaf certificate. When certificates expire yearly, servers can renew certificates using the same private key, and production apps continue functioning seamlessly without requiring emergency App Store updates.</p>
+      `,
+      diagram: `
+sequenceDiagram
+    participant App as iOS Banking App
+    participant Server as Banking Gateway
+    App->>Server: TLS Client Hello
+    Server-->>App: Server Certificate Chain
+    Note over App: URLSessionDelegate checks challenge
+    App->>App: Extract SPKI Public Key Hash
+    alt Hash Matches Pinned Key
+        App-->>Server: .useCredential (Connection Secured)
+    else Hash Mismatch (MitM Attack)
+        App-->>Server: .cancelAuthenticationChallenge (Terminated)
+    end
+      `,
+      leadTip: "Highlight: 'Public Key pinning is preferred over leaf certificate pinning because it prevents catastrophic service outages when SSL certificates are renewed.'"
+    },
+    {
+      id: "q-runloop-timers",
+      qNum: "Q20",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Concurrency & Multithreading",
+      page: "Page 47",
+      title: "Run Loop Mechanics: Why TableView Scrolling Freezes Timers?",
+      origAnswer: "Run loops schedule work and coordinate incoming events on threads.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p><code>Timer.scheduledTimer(...)</code> attaches to <code>.default</code> mode. When a user drags a TableView, RunLoop switches to <code>.tracking</code> mode, freezing the timer! Fix: add timer to <strong><code>.common</code></strong> mode: <code>RunLoop.main.add(timer, forMode: .common)</code>.</p>
+      `,
+      leadTip: "Explaining the <code>.default</code> vs <code>.tracking</code> vs <code>.common</code> Run Loop behavior is instant proof of senior iOS expertise."
+    },
+    {
+      id: "q-coredata-concurrency",
+      qNum: "Q21",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Persistence & Core Data",
+      page: "Page 48",
+      title: "Core Data Multithreading & Context Merging",
+      origAnswer: "Listed in questions list. No answer provided.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p><code>NSManagedObjectContext</code> is NOT thread-safe! Never pass managed objects across queues—pass thread-safe <code>NSManagedObjectID</code> instead. Use <code>viewContext.automaticallyMergesChangesFromParent = true</code> to reflect background writes in the UI automatically.</p>
+      `,
+      diagram: `
+graph TD
+    PSC[NSPersistentStoreCoordinator] --> Store[(SQLite DB File)]
+    PSC --> MainMOC[viewContext - Main Thread / UI Only]
+    PSC --> BgMOC[newBackgroundContext - Background Queue]
+    BgMOC -- Save Changes --> PSC
+    PSC -. automaticallyMergesChangesFromParent .-> MainMOC
+      `,
+      leadTip: "Mention the Xcode launch argument <code>-com.apple.CoreData.ConcurrencyDebug 1</code>, which crashes if a context is accessed off its thread."
+    },
+    {
+      id: "q-ci-cd-release-train",
+      qNum: "Q22",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Leadership & Release",
+      page: "Page 3, 52",
+      title: "Release Train Management & CI/CD Pipeline Best Practices",
+      origAnswer: "Branch from previous release, cherry-pick commits. Pipeline runs SwiftLint, UTs, generates .ipa, puts on shared server.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>Avoid cherry-picking. Use scheduled automated release trains cutting bi-weekly from <code>develop</code>. Unready features stay hidden behind Feature Flags (Remote Config). Fastlane handles signing via <code>match</code>, build via <code>gym</code>, and testing via <code>scan</code>.</p>
+      `,
+      diagram: `
+graph LR
+    Dev[develop / main branch] -- Bi-Weekly Train Cut --> Rel[release/v4.8 branch]
+    Rel --> CI[GitLab CI: SwiftLint + 90% UT + SonarQube]
+    CI --> Fastlane[fastlane match signing + gym build]
+    Fastlane --> Dist[Firebase QA & TestFlight Beta]
+    Dist --> AppStore[App Store Submission]
+      `,
+      leadTip: "Highlight <strong>Feature Flags</strong>: release trains leave on schedule regardless of individual feature readiness because unready features are simply toggled off."
+    },
+    {
+      id: "q-race-conditions",
+      qNum: "Q23",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Concurrency & Multithreading",
+      page: "Page 26-27",
+      title: "Race Condition vs Data Race & Modern Synchronization",
+      origAnswer: "Race condition happens when multiple threads try to access shared resource. Avoid using serial queues, NSLock.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>Data race = concurrent read/write to same memory without sync. Prevent using <strong>Swift Actors</strong>, <code>os_unfair_lock</code> (replaces buggy <code>OSSpinLock</code>), or Dispatch Barriers (reader-writer lock). Detect via Thread Sanitizer (TSan).</p>
+      `,
+      leadTip: "Explain why <code>OSSpinLock</code> was deprecated: Priority Inversion. A low-priority thread holding the spinlock gets starved of CPU time by a high-priority thread that's spinning."
+    },
+    {
+      id: "q-method-dispatch",
+      qNum: "Q24",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Core Swift",
+      page: "Page 49",
+      title: "Method Dispatch in Swift (Dynamic vs Static)",
+      origAnswer: "Selecting appropriate implementation at runtime is dynamic dispatch.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>1) <strong>Static/Direct Dispatch:</strong> Structs, Enums, final classes, protocol extensions. Fast, inlined. 2) <strong>Table Dispatch:</strong> V-Table (class inheritance), PWT (Protocol Witness Table). 3) <strong>Message Dispatch:</strong> <code>objc_msgSend</code> for <code>@objc dynamic</code> methods.</p>
+      `,
+      leadTip: "Protocol extension trap: if a method is declared in a protocol extension but NOT in the protocol definition, Swift uses Static Dispatch based on the variable's declared type!"
+    },
+    {
+      id: "q-architecture-patterns",
+      qNum: "Q25",
+      level: "pro",
+      levelText: "🟣 Pro (Staff/Lead)",
+      category: "Architecture & SOLID",
+      page: "Page 17-20",
+      title: "Architectural Patterns: MVC vs MVP vs MVVM vs VIPER vs VIP",
+      origAnswer: "Detailed notes on MVC, MVP, MVVM, and VIPER with trade-offs.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>MVC = Massive View Controller. MVVM = Standard for modern iOS with Combine or @Observable. VIPER = High separation of concerns for large 20+ dev teams. VIP = Unidirectional loop (VC -> Interactor -> Presenter -> VC).</p>
+      `,
+      diagram: `
+graph LR
+    subgraph VIP Clean-Swift Unidirectional Cycle
+    VC[ViewController] -->|1. Request| Interactor[Interactor - Business Logic]
+    Interactor -->|2. Response| Presenter[Presenter - UI formatting]
+    Presenter -->|3. ViewModel| VC
+    end
+      `,
+      leadTip: "Say: 'Architecture choice depends on team scale and framework. For small-medium teams, MVVM strikes the optimal balance between testability and velocity.'"
+    },
+    {
+      id: "q-access-specifiers",
+      qNum: "Q26",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Core Swift",
+      page: "Page 5",
+      title: "Access Specifiers in Swift (Including Swift 5.9 package)",
+      origAnswer: "1. open. 2. public. 3. private. 4. fileprivate. 5. internal.",
+      status: "outdated",
+      statusText: "Needs Modern Update (package)",
+      geminiAnswer: `
+        <p>6 access levels in modern Swift: <code>open</code> (subclassable outside module), <code>public</code>, <strong><code>package</code> (Swift 5.9+ for multi-module SPM packages)</strong>, <code>internal</code> (default), <code>fileprivate</code>, and <code>private</code>.</p>
+      `,
+      leadTip: "Highlighting <code>package</code> access control shows immediate familiarity with modern multi-module SPM architecture."
+    },
+    {
+      id: "q-gcd-nsoperation",
+      qNum: "Q27",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Concurrency & Multithreading",
+      page: "Page 21-27",
+      title: "GCD vs NSOperationQueue vs Modern Swift Concurrency",
+      origAnswer: "GCD is low level C-API. NSOperation is high level abstraction on GCD.",
+      status: "outdated",
+      statusText: "Needs Modern Update",
+      geminiAnswer: `
+        <p>Swift Concurrency (async/await, Tasks, Actors) is the modern standard with cooperative thread pools matching CPU cores. OperationQueue is best when you need complex task dependencies (<code>addDependency</code>) or max concurrent limits.</p>
+      `,
+      leadTip: "Highlight thread explosion: in GCD, adding 100 concurrent blocks can spin up 100 threads, causing massive memory overhead. Swift Concurrency limits threads to CPU core count."
+    },
+    {
+      id: "q-strong-weak-unowned",
+      qNum: "Q28",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Memory & Objective-C",
+      page: "Page 31",
+      title: "Strong vs Weak vs Unowned References & Side Tables",
+      origAnswer: "Strong retains object. Weak does not retain and automatically sets to nil when deallocated.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>Strong increments retain count. Weak does not increment, always optional, zeroed via <strong>Side Tables</strong> upon deallocation. Unowned expects object to never be nil; traps if accessed after deallocation.</p>
+      `,
+      diagram: `
+graph LR
+    subgraph Retain Cycle Leak
+    A[ViewController] -->|strong| B[Closure / Handler]
+    B -->|strong self| A
+    end
+    subgraph Resolved Cleanly
+    VC[ViewController] -->|strong| CL[Closure]
+    CL -.->|weak self| VC
+    end
+      `,
+      leadTip: "Explain <strong>Side Tables</strong>: Swift objects store retain counts inline until an object has weak references or an overflow count, at which point Swift allocates an external Side Table."
+    },
+    {
+      id: "q-autoreleasepool",
+      qNum: "Q29",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Memory & Objective-C",
+      page: "Page 32",
+      title: "When does autoreleasepool drain & when to use it in Swift?",
+      origAnswer: "Autorelease adds object to autorelease pool. System releases when facing lack of memory.",
+      status: "critical",
+      statusText: "🚨 Correction: Draining at RunLoop end",
+      geminiAnswer: `
+        <p>Correction: Autorelease pool does NOT wait for low memory warnings! It drains at the end of each run loop iteration. Use <code>@autoreleasepool { ... }</code> in tight loops processing images or files to prevent memory watermark spikes.</p>
+      `,
+      leadTip: "Emphasize memory watermark: without <code>autoreleasepool</code> inside a 10,000-iteration loop, memory ramps up until the run loop ends, risking an OS Out-of-Memory (OOM) termination (Jetsam)."
+    },
+    {
+      id: "q-atomic-nonatomic",
+      qNum: "Q30",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Memory & Objective-C",
+      page: "Page 30",
+      title: "Atomic vs Nonatomic: The Thread Safety Myth",
+      origAnswer: "Atomic access is synchronized (returns valid value). Default in Obj-C. Swift properties are nonatomic.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>Atomic only ensures pointer integrity (no torn reads); it does NOT prevent logical race conditions. Swift has no <code>atomic</code> keyword. All properties are nonatomic; thread safety is managed via Actors or locks.</p>
+      `,
+      leadTip: "Strong interview answer: 'Atomic ensures pointer integrity, not application thread-safety. In Swift, we rely on Actors or serial queues rather than property attributes.'"
+    },
+    {
+      id: "q-escaping-closures",
+      qNum: "Q31",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Core Swift",
+      page: "Page 53, 54",
+      title: "What is @escaping in Closures?",
+      origAnswer: "Listed in topics. No answer provided.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p>Non-escaping (default): executes synchronously inside function body, memory stays on stack. <code>@escaping</code>: stored in a property or passed across threads, executed after function returns, allocated on heap.</p>
+      `,
+      leadTip: "Explain why Swift makes closures non-escaping by default: performance (stack allocation) and preventing unintentional retain cycles."
+    },
+    {
+      id: "q-generics",
+      qNum: "Q32",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Core Swift",
+      page: "Page 53, 54",
+      title: "Generics & Opaque Types ('some' vs 'any')",
+      origAnswer: "Mentioned generic tableView component in Beneficiary revamp.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p><code>some</code> (Opaque): single fixed concrete type at compile time, fast static dispatch. <code>any</code> (Existential): boxed runtime container for heterogenous collections, incurs dynamic dispatch overhead.</p>
+      `,
+      leadTip: "Rule of thumb for Swift 6: Default to <code>some</code> for performance and type safety; use <code>any</code> only when storing heterogeneous collections."
+    },
+    {
+      id: "q-dependency-injection",
+      qNum: "Q33",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Architecture & SOLID",
+      page: "Page 53, 56",
+      title: "Dependency Injection (DI) and its Types",
+      origAnswer: "Listed in Advanced Swift questions. No answer provided.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p>1) Initializer Injection (Gold standard, immutable, testable). 2) Property Injection. 3) Method Injection. Modern DI frameworks: Factory, Needle, or SwiftUI <code>@Environment</code>.</p>
+      `,
+      leadTip: "Always advocate for Initializer Injection in code reviews: it makes testing trivial and enforces compile-time safety."
+    },
+    {
+      id: "q-kvc-kvo",
+      qNum: "Q34",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Architecture & SOLID",
+      page: "Page 43-44",
+      title: "KVC & KVO vs Modern Observation (@Observable)",
+      origAnswer: "KVC is string-based property access. KVO monitors changes.",
+      status: "outdated",
+      statusText: "Needs Modern Update",
+      geminiAnswer: `
+        <p>KVO required NSObject and <code>@objc dynamic</code>. Replaced in iOS 17 by the <strong><code>@Observable</code> macro</strong> which automatically tracks property access without Combine or <code>@Published</code> wrappers.</p>
+      `,
+      leadTip: "Highlight the performance leap of the iOS 17 <code>@Observable</code> macro over <code>ObservableObject</code>: no Combine dependencies and granular property-level view invalidation."
+    },
+    {
+      id: "q-push-notifications",
+      qNum: "Q35",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Security & Networking",
+      page: "Page 45-47",
+      title: "Push Notifications: Limits (4KB/5KB), HTTP/2, Rich Extensions",
+      origAnswer: "Device token registration diagram. Mentions max payload 2KB (iOS 8).",
+      status: "outdated",
+      statusText: "Needs Modern Update",
+      geminiAnswer: `
+        <p>Limits: Standard Remote Push = <strong>4 KB (4096 bytes)</strong>. VoIP Push = <strong>5 KB (5120 bytes)</strong>. Uses HTTP/2 with token auth (.p8). <code>UNNotificationServiceExtension</code> intercepts pushes to decrypt banking data before banner presentation.</p>
+      `,
+      leadTip: "In banking apps, mention using <code>UNNotificationServiceExtension</code> to decrypt sensitive payload data received over push before displaying it to the user."
+    },
+    {
+      id: "q-silent-push",
+      qNum: "Q36",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Security & Networking",
+      page: "Page 1 (#11)",
+      title: "Silent Push Notifications vs Regular Push Notifications",
+      origAnswer: "Listed in check-out topic list (#11). No answer provided in the notes.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p>Regular push displays banner/sound. Silent push contains <code>"content-available": 1</code> with priority 5 and no alert/sound. Wakes app in background to sync data. Throttled by OS under Low Power Mode.</p>
+      `,
+      leadTip: "Always complete the background handler by calling <code>completionHandler(.newData)</code> promptly within 30 seconds."
+    },
+    {
+      id: "q-coredata-stack",
+      qNum: "Q37",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Persistence & Core Data",
+      page: "Page 48",
+      title: "Core Data Stack & Key Classes",
+      origAnswer: "List of blank questions: Persistent Store Coordinator, Managed Object Context.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p>Model (<code>.xcdatamodeld</code> schema) + Coordinator (SQLite conductor) + Context (scratchpad) encapsulated into unified <code>NSPersistentContainer</code>.</p>
+      `,
+      diagram: `
+graph TD
+    MOM[NSManagedObjectModel - Schema] --> PSC[NSPersistentStoreCoordinator]
+    Store[NSPersistentStore - SQLite file] --> PSC
+    PSC --> MOC[NSManagedObjectContext - Scratchpad]
+    MOC --> MO[NSManagedObjects - Entities]
+      `,
+      leadTip: "Emphasize that Core Data is <strong>NOT a relational database</strong>—it is an <strong>object graph management and persistence framework</strong> that happens to use SQLite as a storage engine by default."
+    },
+    {
+      id: "q-coredata-migrations",
+      qNum: "Q38",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Persistence & Core Data",
+      page: "Page 48",
+      title: "Core Data Migrations: Lightweight vs Heavyweight",
+      origAnswer: "Listed as question. No answer provided.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p>Never edit an active production model version—add a new version. Lightweight handles adding optional attributes or renaming automatically. Heavyweight requires <code>.xcmappingmodel</code> and custom migration policies.</p>
+      `,
+      leadTip: "Lead insight: For massive databases, heavy migrations can stall app launch and trigger watchdog crash (0x8badf00d). Run migrations on background thread with a progress screen."
+    },
+    {
+      id: "q-coredata-relationships",
+      qNum: "Q39",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Persistence & Core Data",
+      page: "Page 48",
+      title: "Core Data Relationships & Delete Rules",
+      origAnswer: "Listed as question. No answer provided.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p>Delete Rules: <strong>Cascade</strong> (deleting Account deletes its Transactions), <strong>Deny</strong> (cannot delete Account if active Cards exist), <strong>Nullify</strong> (sets relationship to nil), and <strong>No Action</strong> (avoid!).</p>
+      `,
+      leadTip: "Interviewers frequently test Delete Rules: cite the Customer -> Orders scenario to explain why Cascade or Deny is appropriate."
+    },
+    {
+      id: "q-storekit-reviews",
+      qNum: "Q40",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Build & App Store",
+      page: "Page 54",
+      title: "App Store Review Prompt using StoreKit (Best Practices & Rate Limits)",
+      origAnswer: "Implemented CoreAppStoreReviewManager enum. Presented only 3 times in a year. Not guaranteed on every call.",
+      status: "valid",
+      statusText: "Verified Correct",
+      geminiAnswer: `
+        <p>Apple caps review prompt to <strong>3 times in a 365-day period</strong>. Never hook directly to a 'Rate Us' button because the OS may silently suppress it. Modern SwiftUI: <code>@Environment(\\.requestReview) var requestReview</code>.</p>
+      `,
+      leadTip: "Great talking point: You increased the ADIB banking app rating from 3.7 to 4.7 by triggering the prompt at positive emotional moments (e.g. after successful bill payment) rather than at app launch."
+    },
+    {
+      id: "q-nsdateformatter",
+      qNum: "Q41",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Performance & Instruments",
+      page: "Page 41",
+      title: "DateFormatter Performance & Thread Safety",
+      origAnswer: "NSDateFormatter is used to format NSDate. Example shows alloc init and stringFromDate.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p><code>DateFormatter</code> allocation is very expensive; creating it in table cells kills scrolling 60/120 FPS. Cache it in a static property or use modern iOS 15+ format styles: <code>Date.now.formatted(date: .numeric, time: .shortened)</code>.</p>
+      `,
+      leadTip: "In interviews, mention thread-safety: while <code>DateFormatter</code> in modern Swift Foundation is thread-safe on iOS, recreating it in hot loops causes massive heap allocation churn."
+    },
+    {
+      id: "q-category-variables",
+      qNum: "Q42",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Core Swift",
+      page: "Page 42-43",
+      title: "Extensions & Stored Properties via Associated Objects",
+      origAnswer: "Category is a way of extending functionality. You cannot define variables in a category.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>Extensions cannot add stored properties directly because they cannot change the type's memory layout. But you CAN store state using Objective-C runtime <strong>Associated Objects</strong> (<code>objc_setAssociatedObject</code>).</p>
+      `,
+      leadTip: "Subclassing is not always possible (e.g. when working with framework classes or value types). Mentioning Associated Objects demonstrates deep runtime mastery."
+    },
+    {
+      id: "q-singleton-swift",
+      qNum: "Q43",
+      level: "beginner",
+      levelText: "🟢 Beginner",
+      category: "Architecture & SOLID",
+      page: "Page 43",
+      title: "How to achieve Singleton pattern in Swift? Pros and Cons?",
+      origAnswer: "Ensures only one instance exists and has global point of access. Examples: UserDefaults, UIApplication, FileManager.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p><code>final class NetworkManager { static let shared = NetworkManager(); private init() {} }</code>. Thread-safe by default in Swift via <code>dispatch_once</code>. Decouple with protocols for testability.</p>
+      `,
+      leadTip: "In Swift, <code>static let</code> uses <code>dispatch_once</code> under the hood automatically, guaranteeing thread-safe one-time initialization."
+    },
+    {
+      id: "q-tdd-bdd",
+      qNum: "Q44",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Testing & Methodology",
+      page: "Page 4",
+      title: "What is the difference between TDD and BDD?",
+      origAnswer: "TDD is Test driven development, BDD is Behaviour driven development.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>TDD = Red-Green-Refactor testing isolated functions/ViewModels via XCTest. BDD = Given-When-Then acceptance testing behavior via Quick/Nimble or XCUITest.</p>
+      `,
+      leadTip: "Mention how your team balances them: TDD for unit tests (targeting 85-90% coverage on business logic/ViewModels) and BDD-style test cases for critical UI end-to-end flows."
+    },
+    {
+      id: "q-initializers",
+      qNum: "Q45",
+      level: "beginner",
+      levelText: "🟢 Beginner",
+      category: "Core Swift",
+      page: "Page 28",
+      title: "Designated vs Convenience Initializers & Two-Phase Init",
+      origAnswer: "Designated initializers are primary initializers. Convenience are secondary supporting initializers.",
+      status: "valid",
+      statusText: "Verified Correct",
+      geminiAnswer: `
+        <p>Designated must delegate UP to immediate superclass designated init. Convenience must delegate ACROSS to another init in same class and ultimately hit designated.</p>
+      `,
+      leadTip: "Mention <code>required init?(coder:)</code>: when a subclass implements any designated initializer, it loses automatic inheritance of required initializers and must explicitly implement them."
+    },
+    {
+      id: "q-shallow-deep-copy",
+      qNum: "Q46",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Core Swift",
+      page: "Page 34",
+      title: "Difference between Shallow Copy and Deep Copy",
+      origAnswer: "Shallow copy copies address/pointer only. Deep copy copies actual data.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>Shallow copy duplicates container while elements reference same memory. Deep copy clones child objects recursively. In Swift, value types provide value semantics, but Codable encode/decode provides instant deep copies.</p>
+      `,
+      leadTip: "Highlight the subtle bug: a Swift struct containing a class property has shallow reference semantics for that property unless explicitly cloned."
+    },
+    {
+      id: "q-variadic",
+      qNum: "Q47",
+      level: "beginner",
+      levelText: "🟢 Beginner",
+      category: "Core Swift",
+      page: "Page 7",
+      title: "What are Variadic Parameters?",
+      origAnswer: "It accepts zero or more values of specified type for any given function using (...).",
+      status: "upgrade",
+      statusText: "Lead Upgrade (Swift 5.4+)",
+      geminiAnswer: `
+        <p>Accepts comma-separated values into <code>[T]</code>. Since Swift 5.4 (SE-0284), functions can have <strong>multiple variadic parameters</strong>.</p>
+      `,
+      leadTip: "Demonstrate language evolution knowledge by pointing out that Swift 5.4 lifted the single-variadic-parameter restriction."
+    },
+    {
+      id: "q-workspace-project-target-scheme",
+      qNum: "Q48",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Build & App Store",
+      page: "Page 6",
+      title: "Explain Workspace, Projects, Targets, Schemes",
+      origAnswer: "Workspace contains projects. Project contains code. Target defines settings. Scheme defines build/test/run.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>Workspace = top wrapper coordinating multi-projects and SPM packages. Project = source container. Target = single build product (App, Extension, Tests). Scheme = execution instructions.</p>
+      `,
+      diagram: `
+graph TD
+    WS[.xcworkspace] --> Proj1[Main App .xcodeproj]
+    WS --> Proj2[SharedKit SPM Package]
+    Proj1 --> Target1[iOS App Target]
+    Proj1 --> Target2[Notification Extension Target]
+    Proj1 --> Target3[Unit Tests Target]
+    Scheme[Scheme: Debug / Staging / Release] -. controls .-> Target1
+      `,
+      leadTip: "Mention using Scheme pre/post-actions and Build Configurations to manage multi-environment builds without changing source code."
+    },
+    {
+      id: "q-enums",
+      qNum: "Q49",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Core Swift",
+      page: "Page 53",
+      title: "Enums: Raw Values vs Associated Values & Dynamic Handling",
+      origAnswer: "Listed as topic. No answer provided.",
+      status: "missing",
+      statusText: "Missing Answer Provided",
+      geminiAnswer: `
+        <p>Raw Values = pre-populated compile-time literals of same type. Associated Values = custom payloads per case; essential for modeling Finite State Machines (FSM) and <code>Result&lt;Success, Failure&gt;</code>.</p>
+      `,
+      leadTip: "Mention how <code>enum</code> with associated values is the primary tool in Swift for modeling Finite State Machines (FSM) and Result types."
+    },
+    {
+      id: "q-bundleid-appid",
+      qNum: "Q50",
+      level: "beginner",
+      levelText: "🟢 Beginner",
+      category: "Build & App Store",
+      page: "Page 7",
+      title: "What is Bundle ID and App ID?",
+      origAnswer: "BundleID is present in Xcode. AppID is TeamID + BundleID.",
+      status: "valid",
+      statusText: "Verified Correct",
+      geminiAnswer: `
+        <p>Bundle ID = reverse-domain target identifier. App ID = Team ID + Bundle ID (e.g. <code>ABCDE12345.com.adib.smartbanking</code>) used for entitlements and App Groups.</p>
+      `,
+      leadTip: "Mention that App Extensions (e.g., Notification Service Extension) MUST prefix their Bundle ID with the parent app's Bundle ID."
+    },
+    {
+      id: "q-app-states",
+      qNum: "Q51",
+      level: "beginner",
+      levelText: "🟢 Beginner",
+      category: "App Lifecycle & UIKit",
+      page: "Page 36",
+      title: "What are the different states of an iOS Application?",
+      origAnswer: "Not running, Inactive, Active, Background, Suspended.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>Not Running -> Inactive (interrupted, FaceID) -> Active (foreground) -> Background (executing code) -> Suspended (frozen in RAM, killed without notice by Jetsam). Decoupled in iOS 13+ with <code>UISceneDelegate</code> for multi-window.</p>
+      `,
+      diagram: `
+graph LR
+    NotRunning[Not Running] --> Inactive[Inactive - Interrupted]
+    Inactive --> Active[Active - Foreground & Touches]
+    Active --> Background[Background - Code executing]
+    Background --> Suspended[Suspended - Frozen in RAM]
+    Suspended --> NotRunning
+      `,
+      leadTip: "Explain that an app does NOT receive a notification when killed while in the Suspended state. Cleanup must happen in <code>applicationDidEnterBackground</code>."
+    },
+    {
+      id: "q-memento",
+      qNum: "Q52",
+      level: "intermediate",
+      levelText: "🔵 Intermediate",
+      category: "Architecture & SOLID",
+      page: "Page 21",
+      title: "Memento Pattern & State Restoration",
+      origAnswer: "Design pattern allowing you to store stuff somewhere.",
+      status: "upgrade",
+      statusText: "Lead Upgrade",
+      geminiAnswer: `
+        <p>Captures internal state for later restoration without exposing encapsulation. Modern Swift: Codable disk serialization or SwiftUI <code>@SceneStorage</code> / <code>@AppStorage</code>.</p>
+      `,
+      leadTip: "Mention how Memento prevents massive data leaks by keeping private properties internal while archiving a snapshot."
+    },
+
+    // ---------------------------------------------------------
+    // PART 3: ARCHIVED / OBSOLETE TOPICS (FOR HISTORICAL CONTEXT)
+    // Placed at the very end as requested!
+    // ---------------------------------------------------------
+    {
+      id: "q-bitcode",
+      qNum: "Q53",
+      level: "legacy",
+      levelText: "📦 Legacy Archive",
+      category: "Archived & Deprecated",
+      page: "Page 5-6",
+      title: "[OBSOLETE] Bitcode & App Thinning",
+      origAnswer: "Bitcode refers to 'LLVM bitcode' sent to AppStoreConnect. This allows Apple to re-optimize apps further (downsizing executable size).",
+      status: "critical",
+      statusText: "🚨 DEPRECATED & REMOVED",
+      geminiAnswer: `
+        <p><strong>🚨 OBSOLETE / HISTORICAL ONLY:</strong></p>
+        <p><strong>Bitcode was deprecated in Xcode 14 and completely removed in Xcode 15+ and App Store submissions!</strong> Apple no longer re-compiles bitcode for iOS. App Thinning today consists exclusively of <strong>App Slicing</strong> and <strong>On-Demand Resources (ODR)</strong>.</p>
+      `,
+      diagram: `
+graph LR
+    UniversalIPA[Full Build] --> AppStore[App Store Connect]
+    AppStore -- App Slicing --> iPhone15[Device Sliced IPA: @3x + arm64]
+    AppStore -- ODR --> DynamicAssets[On-Demand Resources]
+      `,
+      leadTip: "If asked about Bitcode in an interview, state immediately: 'Bitcode was an intermediate LLVM format, but Apple deprecated it in Xcode 14 and removed it in Xcode 15.'"
+    },
+    {
+      id: "q-outlets-memory",
+      qNum: "Q54",
+      level: "legacy",
+      levelText: "📦 Legacy Archive",
+      category: "Archived & Deprecated",
+      page: "Page 33",
+      title: "[OBSOLETE] viewDidUnload & Outlets Management",
+      origAnswer: "Retained outlets should be released and nil'ed in both dealloc and viewDidUnload.",
+      status: "critical",
+      statusText: "🚨 REMOVED SINCE iOS 6",
+      geminiAnswer: `
+        <p><strong>🚨 OBSOLETE / HISTORICAL ONLY:</strong></p>
+        <p><code>viewDidUnload</code> was deprecated in <strong>iOS 6.0 (2012)</strong> and is completely dead/never called. Views are no longer purged automatically on memory warnings. IBOutlets are declared <code>weak</code> simply because <code>self.view.subviews</code> already strongly owns them.</p>
+      `,
+      leadTip: "Never mention viewDidUnload as active lifecycle; mention it only as historical knowledge removed over a decade ago."
+    },
+    {
+      id: "q-nsurlconnection-deprecated",
+      qNum: "Q55",
+      level: "legacy",
+      levelText: "📦 Legacy Archive",
+      category: "Archived & Deprecated",
+      page: "Page 49",
+      title: "[OBSOLETE] NSURLConnection Synchronous vs Asynchronous",
+      origAnswer: "Details synchronous vs asynchronous connection with NSURLConnection.",
+      status: "critical",
+      statusText: "🚨 DEPRECATED SINCE iOS 9",
+      geminiAnswer: `
+        <p><strong>🚨 OBSOLETE / HISTORICAL ONLY:</strong></p>
+        <p><code>NSURLConnection</code> was deprecated in <strong>iOS 9.0 (2015)</strong>. Completely replaced by <code>URLSession</code> and Swift Concurrency (<code>try await URLSession.shared.data(...)</code>).</p>
+      `,
+      leadTip: "Always clarify: 'NSURLConnection was deprecated in iOS 9 in favor of URLSession.'"
+    },
+    {
+      id: "q-gcd-priority-deprecated",
+      qNum: "Q56",
+      level: "legacy",
+      levelText: "📦 Legacy Archive",
+      category: "Archived & Deprecated",
+      page: "Page 23-24",
+      title: "[OBSOLETE] DISPATCH_QUEUE_PRIORITY_* Global Constants",
+      origAnswer: "Uses dispatch_get_global_queue with DISPATCH_QUEUE_PRIORITY_HIGH, DEFAULT, LOW, BACKGROUND.",
+      status: "critical",
+      statusText: "🚨 DEPRECATED SINCE iOS 8",
+      geminiAnswer: `
+        <p><strong>🚨 OBSOLETE / HISTORICAL ONLY:</strong></p>
+        <p><code>DISPATCH_QUEUE_PRIORITY_*</code> constants were deprecated in iOS 8.0. Replaced by <strong>Quality of Service (QoS)</strong>: <code>.userInteractive</code>, <code>.userInitiated</code>, <code>.default</code>, <code>.utility</code>, <code>.background</code>.</p>
+      `,
+      leadTip: "Always use modern Swift QoS syntax: <code>DispatchQueue.global(qos: .userInitiated).async { ... }</code>."
+    },
+    {
+      id: "q-array-comparison",
+      qNum: "Q57",
+      level: "legacy",
+      levelText: "📦 Legacy Archive",
+      category: "Archived & Deprecated",
+      page: "Page 28-29",
+      title: "[OBSOLETE] NSMutableArray vs NSArray & Swift 1.x println",
+      origAnswer: "Using binary operator '==', we can compare both arrays. Code uses println('Yo').",
+      status: "outdated",
+      statusText: "⚠️ Swift 1.x Syntax",
+      geminiAnswer: `
+        <p><strong>🚨 OBSOLETE SYNTAX:</strong></p>
+        <p>The original snippet used <code>println()</code>, which was removed in Swift 2.0 (2015). In modern Swift, use standard <code>Array&lt;T&gt;</code> with Copy-on-Write (CoW) value semantics instead of NSArray.</p>
+      `,
+      leadTip: "Modern Swift arrays are value types with Copy-on-Write, eliminating the need for NSArray."
+    },
+    {
+      id: "q-svn-cleanup",
+      qNum: "Q58",
+      level: "legacy",
+      levelText: "📦 Legacy Archive",
+      category: "Archived & Deprecated",
+      page: "Page 40-41",
+      title: "[OBSOLETE] SVN (Subversion) vs Git & Working Copy Locked",
+      origAnswer: "Working Copy XXXX locked. Run svn cleanup. If failed, copy edited items, delete folder, re-checkout.",
+      status: "outdated",
+      statusText: "⚠️ Legacy VCS",
+      geminiAnswer: `
+        <p><strong>🚨 OBSOLETE VCS:</strong></p>
+        <p>SVN is a centralized version control system virtually abandoned by modern iOS teams in favor of Git. Git is distributed, stores snapshots as cryptographic DAG trees, and supports lightweight branching, pull requests, and modern CI/CD.</p>
+      `,
+      leadTip: "Focus on Git branching models (Trunk-based development vs GitFlow) and merge strategies (Rebase vs Merge)."
+    }
+  ];
+
+  let currentLevel = 'all';
+  let currentStatus = 'all';
+  let currentCategory = 'all';
+  let collapsedCardIds = new Set();
+
+  // Modal Zoom State
+  let currentModalZoom = 1.0;
+
+  function init() {
+    renderSidebarCounts();
+    renderCategories();
+    renderCards();
+    updateProgress();
+    triggerMermaid(150);
+  }
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.classList.toggle('collapsed');
+  }
+
+  function renderSidebarCounts() {
+    const savedDone = JSON.parse(localStorage.getItem('ios_prep_done') || '{}');
+    
+    document.getElementById('cnt-all-lvl').innerText = questionsData.length;
+    document.getElementById('cnt-must-know').innerText = questionsData.filter(q => q.level === 'must-know').length;
+    document.getElementById('cnt-pro').innerText = questionsData.filter(q => q.level === 'pro').length;
+    document.getElementById('cnt-intermediate').innerText = questionsData.filter(q => q.level === 'intermediate').length;
+    document.getElementById('cnt-beginner').innerText = questionsData.filter(q => q.level === 'beginner').length;
+    document.getElementById('cnt-legacy').innerText = questionsData.filter(q => q.level === 'legacy').length;
+
+    document.getElementById('cnt-critical').innerText = questionsData.filter(q => q.status === 'critical').length;
+    document.getElementById('cnt-missing').innerText = questionsData.filter(q => q.status === 'missing').length;
+    document.getElementById('cnt-upgrade').innerText = questionsData.filter(q => q.status === 'upgrade').length;
+    
+    const doneCount = Object.keys(savedDone).filter(k => questionsData.some(q => q.id === k)).length;
+    document.getElementById('cnt-done').innerText = doneCount;
+    document.getElementById('cnt-pending').innerText = questionsData.length - doneCount;
+  }
+
+  function renderCategories() {
+    const categories = ['all', ...new Set(questionsData.map(q => q.category))];
+    const container = document.getElementById('categoryFilters');
+    container.innerHTML = categories.map(cat => {
+      const count = cat === 'all' ? questionsData.length : questionsData.filter(q => q.category === cat).length;
+      return `
+        <button class="filter-item-btn ${cat === currentCategory ? 'active' : ''}" 
+                onclick="setCategoryFilter('${cat}')">
+          <span>${cat === 'all' ? 'All Domains' : cat}</span>
+          <span class="count-badge">${count}</span>
+        </button>
+      `;
+    }).join('');
+  }
+
+  function renderCards() {
+    const container = document.getElementById('cardsList');
+    const searchVal = document.getElementById('searchInput').value.toLowerCase();
+    const savedDone = JSON.parse(localStorage.getItem('ios_prep_done') || '{}');
+
+    const filtered = questionsData.filter(q => {
+      const matchesLevel = (currentLevel === 'all' || q.level === currentLevel);
+      const matchesCategory = (currentCategory === 'all' || q.category === currentCategory);
+      
+      let matchesStatus = true;
+      if (currentStatus === 'critical') matchesStatus = (q.status === 'critical');
+      else if (currentStatus === 'missing') matchesStatus = (q.status === 'missing');
+      else if (currentStatus === 'upgrade') matchesStatus = (q.status === 'upgrade');
+      else if (currentStatus === 'done') matchesStatus = !!savedDone[q.id];
+      else if (currentStatus === 'pending') matchesStatus = !savedDone[q.id];
+
+      const matchesSearch = !searchVal || 
+        q.qNum.toLowerCase().includes(searchVal) ||
+        q.title.toLowerCase().includes(searchVal) ||
+        q.origAnswer.toLowerCase().includes(searchVal) ||
+        q.geminiAnswer.toLowerCase().includes(searchVal) ||
+        q.category.toLowerCase().includes(searchVal);
+
+      return matchesLevel && matchesCategory && matchesStatus && matchesSearch;
+    });
+
+    document.getElementById('filterSummary').innerText = `Showing ${filtered.length} of ${questionsData.length} topics • Tap diagrams to zoom`;
+
+    if (filtered.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <h3>No topics match your current filter selection.</h3>
+          <p>Try resetting the search bar or choosing 'All Topics'.</p>
+        </div>
+      `;
+      return;
+    }
+
+    let hasRenderedArchiveDivider = false;
+
+    container.innerHTML = filtered.map(q => {
+      const isDone = !!savedDone[q.id];
+      const isCollapsed = collapsedCardIds.has(q.id);
+      const isLegacy = q.level === 'legacy';
+
+      let dividerHTML = '';
+      if (isLegacy && !hasRenderedArchiveDivider && currentLevel === 'all') {
+        hasRenderedArchiveDivider = true;
+        dividerHTML = `
+          <div class="archive-section-divider">
+            <h3>📦 Archived / Legacy Topics (Historical Reference)</h3>
+            <p>These topics were found in your notes but are no longer active in modern iOS development (e.g. Bitcode, viewDidUnload, NSURLConnection). Interviewers may ask why Apple removed them, but they are NOT part of modern architecture.</p>
+          </div>
+        `;
+      }
+
+      let lvlClass = 'lvl-intermediate';
+      if (q.level === 'must-know') lvlClass = 'lvl-must-know';
+      else if (q.level === 'pro') lvlClass = 'lvl-pro';
+      else if (q.level === 'beginner') lvlClass = 'lvl-beginner';
+      else if (q.level === 'legacy') lvlClass = 'lvl-legacy';
+
+      let stClass = 'st-valid';
+      if (q.status === 'critical') stClass = 'st-critical';
+      else if (q.status === 'outdated') stClass = 'st-outdated';
+      else if (q.status === 'missing') stClass = 'st-missing';
+      else if (q.status === 'upgrade') stClass = 'st-upgrade';
+      else if (q.status === 'legacy') stClass = 'st-legacy';
+
+      return `
+        ${dividerHTML}
+        <article class="question-card ${isDone ? 'done' : ''} ${isCollapsed ? 'collapsed' : ''} ${isLegacy ? 'legacy-card' : ''}" id="card-${q.id}">
+          <div class="card-header-bar" onclick="toggleCardCollapse('${q.id}')">
+            <div class="card-header-left">
+              <div class="badges-row">
+                <span class="q-number-pill">${q.qNum}</span>
+                <span class="level-badge ${lvlClass}">${q.levelText}</span>
+                <span class="tag-category">${q.category}</span>
+                <span class="status-badge ${stClass}">${q.statusText}</span>
+                <span class="tag-category">${q.page}</span>
+              </div>
+              <h2 class="question-title">
+                <span class="chevron-icon">▼</span>
+                <span>${q.title}</span>
+              </h2>
+            </div>
+            <div class="card-header-actions" onclick="event.stopPropagation()">
+              <label class="check-container">
+                <input type="checkbox" onchange="toggleDone('${q.id}', this.checked)" ${isDone ? 'checked' : ''}>
+                <span>${isDone ? 'Mastered' : 'Mark Done'}</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="card-body">
+            <div class="orig-answer-box">
+              <div class="orig-answer-label">📄 Original Answer in Notes</div>
+              <div>${q.origAnswer}</div>
+            </div>
+
+            <div class="gemini-answer-box">
+              <div class="gemini-answer-top">
+                <span class="gemini-tag">★ Gemini Answer (Senior Tech Lead)</span>
+                ${q.leadTip ? '<span class="lead-insight-pill">💡 Lead Interview Insight</span>' : ''}
+              </div>
+              <div class="answer-text">
+                ${q.geminiAnswer}
+              </div>
+
+              ${q.diagram ? `
+                <div class="mermaid-container" onclick="openDiagramModal('${q.qNum} • ${q.title.replace(/'/g, "\\'")}', this)" title="Tap to open in big zoomable modal view">
+                  <div class="zoom-hint-badge">🔍 Tap to Zoom Diagram</div>
+                  <div class="mermaid">
+                    ${q.diagram}
+                  </div>
+                </div>
+              ` : ''}
+
+              ${q.leadTip ? `
+                <div class="lead-tip-card">
+                  <strong>💡 What Interviewers Look For:</strong> ${q.leadTip}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </article>
+      `;
+    }).join('');
+
+    triggerMermaid(100);
+  }
+
+  function toggleCardCollapse(id) {
+    if (collapsedCardIds.has(id)) {
+      collapsedCardIds.delete(id);
+    } else {
+      collapsedCardIds.add(id);
+    }
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+      card.classList.toggle('collapsed');
+      if (!card.classList.contains('collapsed')) {
+        triggerMermaid(50);
+      }
+    }
+  }
+
+  function toggleAllCards(expand) {
+    if (expand) {
+      collapsedCardIds.clear();
+      document.querySelectorAll('.question-card').forEach(c => c.classList.remove('collapsed'));
+      triggerMermaid(100);
+    } else {
+      questionsData.forEach(q => collapsedCardIds.add(q.id));
+      document.querySelectorAll('.question-card').forEach(c => c.classList.add('collapsed'));
+    }
+  }
+
+  function toggleDone(id, isChecked) {
+    const savedDone = JSON.parse(localStorage.getItem('ios_prep_done') || '{}');
+    if (isChecked) {
+      savedDone[id] = true;
+    } else {
+      delete savedDone[id];
+    }
+    localStorage.setItem('ios_prep_done', JSON.stringify(savedDone));
+
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+      card.classList.toggle('done', isChecked);
+      const span = card.querySelector('.check-container span');
+      if (span) span.innerText = isChecked ? 'Mastered' : 'Mark Done';
+    }
+
+    renderSidebarCounts();
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const savedDone = JSON.parse(localStorage.getItem('ios_prep_done') || '{}');
+    const total = questionsData.length;
+    const completed = Object.keys(savedDone).filter(k => questionsData.some(q => q.id === k)).length;
+    const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+    document.getElementById('progressFill').style.width = `${percent}%`;
+    document.getElementById('progressPercent').innerText = `${percent}%`;
+    document.getElementById('progressSummary').innerText = `${completed} of ${total} mastered`;
+  }
+
+  function setLevelFilter(lvl) {
+    currentLevel = lvl;
+    document.querySelectorAll('#levelFilters .filter-item-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-lvl') === lvl);
+    });
+    renderCards();
+  }
+
+  function setStatusFilter(st) {
+    currentStatus = st;
+    document.querySelectorAll('#statusFilters .filter-item-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.getAttribute('data-st') === st);
+    });
+    renderCards();
+  }
+
+  function setCategoryFilter(cat) {
+    currentCategory = cat;
+    document.querySelectorAll('#categoryFilters .filter-item-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.innerText.includes(cat === 'all' ? 'All Domains' : cat));
+    });
+    renderCards();
+  }
+
+  function applyFilters() {
+    renderCards();
+  }
+
+  function toggleTheme() {
+    const isDark = document.body.getAttribute('data-theme') === 'dark';
+    if (isDark) {
+      document.body.removeAttribute('data-theme');
+      document.getElementById('themeBtn').innerText = '🌓 Theme';
+    } else {
+      document.body.setAttribute('data-theme', 'dark');
+      document.getElementById('themeBtn').innerText = '☀️ Light';
+    }
+  }
+
+  // -------------------------------------------------------------
+  // DIAGRAM MODAL ZOOM VIEWER LOGIC
+  // -------------------------------------------------------------
+  function openDiagramModal(title, containerEl) {
+    const modal = document.getElementById('diagramModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalContainer = document.getElementById('modalDiagramContainer');
+
+    modalTitle.innerText = title;
+    
+    // Find the rendered SVG or Mermaid element
+    const svgEl = containerEl.querySelector('svg');
+    if (svgEl) {
+      modalContainer.innerHTML = svgEl.outerHTML;
+    } else {
+      modalContainer.innerHTML = containerEl.querySelector('.mermaid')?.innerHTML || '';
+    }
+
+    currentModalZoom = 1.0;
+    updateModalZoomStyle();
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeDiagramModal() {
+    const modal = document.getElementById('diagramModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  function closeModalOnBackdrop(e) {
+    if (e.target.id === 'diagramModal') {
+      closeDiagramModal();
+    }
+  }
+
+  function zoomDiagram(delta) {
+    currentModalZoom = Math.max(0.5, Math.min(3.0, currentModalZoom + delta));
+    updateModalZoomStyle();
+  }
+
+  function resetDiagramZoom() {
+    currentModalZoom = 1.0;
+    updateModalZoomStyle();
+  }
+
+  function updateModalZoomStyle() {
+    const container = document.getElementById('modalDiagramContainer');
+    container.style.transform = `scale(${currentModalZoom})`;
+    document.getElementById('zoomLevelDisplay').innerText = `${Math.round(currentModalZoom * 100)}%`;
+  }
+
+  // Keyboard shortcut: Escape closes modal
+  if (typeof window !== 'undefined') {
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeDiagramModal();
+      }
+    });
+  }
+
+  init();
+</script>
+</body>
+</html>
