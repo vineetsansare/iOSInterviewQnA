@@ -1,5 +1,5 @@
 # iOS Tech Lead Master Prep & Study Notebook (2026 Edition)
-> **Candidate:** Vineet Sansare (10+ Years Experience &bull; Ex-Hexaware, ADIB Sr. iOS Developer)  
+> **Candidate:** Vineet Sansare (10+ Years Experience &bull; Senior / Staff iOS Engineer & Lead)  
 > **Target Role:** iOS Tech Lead / Staff iOS Software Engineer  
 > **Tech Baseline:** Swift 5.10 / Swift 6 &bull; iOS 17 / iOS 18 &bull; Modern Concurrency &bull; Clean Architecture  
 > **Design Theme:** Study Notebook &bull; No Academic Jargon &bull; Spoken Conversational Tone
@@ -25,19 +25,20 @@
 
 ```mermaid
 sequenceDiagram
-    participant UI as SwiftUI View
+    autonumber
+    actor UI as SwiftUI View
     participant Store as TCA Store
-    participant Reducer as Reducer
-    participant Env as Dependencies / API
-    UI->>Store: View sends Action (.submitTransfer)
-    Store->>Reducer: Forward Action + Current State
+    participant Reducer as Reducer Domain
+    participant Env as Dependencies
+    UI->>Store: Send Action (.submitTransfer)
+    Store->>Reducer: Forward Action and Current State
     Reducer-->>Store: Mutate State (isTransferring = true)
-    Store-->>UI: State updated (Show Spinner)
-    Reducer->>Env: Execute side-effect (API Call)
-    Env-->>Store: Feed Action back (.transferResponse)
-    Store->>Reducer: Forward Action + Current State
+    Store-->>UI: Re-render UI (Show Loading Spinner)
+    Reducer->>Env: Run Side Effect (API Call)
+    Env-->>Store: Return Result Action (.transferResponse)
+    Store->>Reducer: Forward Result Action
     Reducer-->>Store: Mutate State (isTransferring = false)
-    Store-->>UI: State updated (Hide Spinner)
+    Store-->>UI: Re-render UI (Hide Spinner)
 ```
 
 ```swift
@@ -90,14 +91,14 @@ struct TransferFeature {
   This gives us deterministic project structures and lets us define micro-feature templates so every team builds modules exactly the same way. The classic gotcha with massive apps is the 15+ minute build time. By leveraging Tuist's **binary caching** (pre-compiling modules that haven't changed into `.xcframeworks`), we can cut warm build times down from 15 minutes to under 2 minutes, radically improving developer productivity."
 
 ```mermaid
-graph TD
-    A[Manifests: Project.swift] --> B(Tuist CLI)
-    B --> C{Cache Hit?}
-    C -->|Yes| D[Pull Pre-compiled .xcframework]
-    C -->|No| E[Compile Source Code]
-    D --> F[Generate .xcodeproj / .xcworkspace]
+flowchart TD
+    A["Project Manifest (Project.swift)"] --> B["Tuist CLI Engine"]
+    B --> C{"Binary Cache Hit?"}
+    C -->|"Yes"| D["Pull Prebuilt XCFramework"]
+    C -->|"No"| E["Compile Module from Source"]
+    D --> F["Generate Ephemeral Workspace"]
     E --> F
-    F --> G[Fast Incremental Build: 2 min vs 15 min]
+    F --> G["Fast Incremental Build (2 min vs 15 min)"]
 ```
 
 ```swift
@@ -110,7 +111,7 @@ let project = Project(
             name: "FeatureAccounts",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.adib.feature.accounts",
+            bundleId: "com.company.feature.accounts",
             sources: ["Sources/**"],
             dependencies: [
                 .project(target: "CoreNetwork", path: "../../Core/Network"),
@@ -121,7 +122,7 @@ let project = Project(
             name: "FeatureAccountsTests",
             destinations: .iOS,
             product: .unitTests,
-            bundleId: "com.adib.feature.accounts.tests",
+            bundleId: "com.company.feature.accounts.tests",
             sources: ["Tests/**"],
             dependencies: [.target(name: "FeatureAccounts")]
         )
@@ -140,13 +141,13 @@ let project = Project(
 
 ```mermaid
 flowchart TD
-    subgraph ObservableObject [Pre-iOS 17: ObservableObject]
-        A1[Change Property A] --> B1[ObjectWillChange Publisher]
-        B1 --> C1[Invalidates ALL Views observing object!]
+    subgraph PreiOS17 ["Pre-iOS 17: ObservableObject"]
+        A1["Mutate Property A"] --> B1["objectWillChange Publisher"]
+        B1 --> C1["Invalidates ALL Views observing Object"]
     end
-    subgraph ObservableMacro [iOS 17+: @Observable]
-        A2[Change Property A] --> B2[Observation Registrar]
-        B2 --> C2[Invalidates ONLY Views reading Property A!]
+    subgraph ModernObservation ["iOS 17+: @Observable Macro"]
+        A2["Mutate Property A"] --> B2["Observation Registrar"]
+        B2 --> C2["Invalidates ONLY Views reading Property A"]
     end
 ```
 
@@ -175,11 +176,11 @@ final class AccountViewModel {
   When you use `AnyView`, SwiftUI loses the type information and destroys the view state, causing performance drops and animation glitches. For lists or dynamic content, we rely on Explicit Identity using `.id()`. When debugging performance drops in complex financial dashboards, my first move is dropping `Self._printChanges()` in the body to catch unintended re-render cascades."
 
 ```mermaid
-graph TD
-    A[View Update Triggered] --> B{Same Identity?}
-    B -- Yes --> C[Update View Value & State Preserved]
-    B -- No --> D[Destroy Old View, Create New View]
-    D --> E[State Lost / Severe Re-render Cascade!]
+flowchart TD
+    A["View Update Triggered"] --> B{"Same View Identity?"}
+    B -->|"Yes"| C["Update Body & Preserve State"]
+    B -->|"No"| D["Destroy Old View, Recreate Node"]
+    D --> E["State Lost and Layout Tree Recalculated"]
 ```
 
 ```swift
@@ -208,10 +209,10 @@ struct TransactionListView: View {
 
 ```mermaid
 flowchart LR
-    A[Push Notification] --> B[AppRouter]
-    C[User Button Action] --> B
-    B --> |Mutates| D[NavigationPath Data Array]
-    D --> |Drives| E[NavigationStack UI]
+    A["Push Notification Deep Link"] --> B["Central AppRouter"]
+    C["User Button Tap Action"] --> B
+    B -->|"Mutates"| D["NavigationPath Data Stack"]
+    D -->|"Drives"| E["NavigationStack View Hierarchy"]
 ```
 
 ```swift
@@ -244,12 +245,12 @@ enum Route: Hashable {
   For standard asynchronous work like fetching a user's portfolio, `async/await` completely replaces Combine; it's cleaner, avoids retain cycles, and gives us compile-time data race safety via actors and `Sendable` checking in Swift 6. However, for complex event streams over time—like managing a live web-socket feed of stock prices with debouncing, throttling, and merging streams—Combine still excels because of its mature operator ecosystem."
 
 ```mermaid
-graph TD
-    A[Task Type] --> B{One-shot or Stream?}
-    B -- One-shot: API Call --> C[async/await (Clean, Safe)]
-    B -- Stream: Events over time --> D{Complex Operators Needed?}
-    D -- Yes: Debounce, Throttle --> E[Combine / RxSwift]
-    D -- No: Simple iteration --> F[AsyncStream / AsyncSequence]
+flowchart TD
+    A["Task Requirement"] --> B{"One-shot or Stream?"}
+    B -->|"One-shot"| C["Swift Concurrency: async / await"]
+    B -->|"Stream"| D{"Complex Reactive Operators?"}
+    D -->|"Yes: Debounce, Throttle, Zip"| E["Combine or Reactive Framework"]
+    D -->|"No: Simple Async Loop"| F["AsyncSequence or AsyncStream"]
 ```
 
 ```swift
@@ -280,15 +281,19 @@ func priceStream() -> AsyncStream<Double> {
 
 ```mermaid
 sequenceDiagram
-    participant User
-    participant Subject
-    participant Network
-    User->>Subject: Types "A"
-    User->>Subject: Types "AA"
-    User->>Subject: Types "AAPL" (pauses)
-    Note over Subject: Debounce waits 300ms
-    Subject->>Network: Request "AAPL" (cancels "A" & "AA")
-    Network-->>Subject: Results for "AAPL"
+    actor User as User Input
+    participant Subject as PassthroughSubject
+    participant Operator as debounce and switchToLatest
+    participant Network as Network Service
+    User->>Subject: User types character A
+    User->>Subject: User types character AA
+    User->>Subject: User types query AAPL and pauses
+    Subject->>Operator: Emits stream events
+    Note over Operator: Debounce timer waits 300ms
+    Operator->>Network: Execute search for AAPL
+    Note over Network: Cancels in-flight requests for A and AA
+    Network-->>Operator: Return search results for AAPL
+    Operator-->>User: Update search UI
 ```
 
 ```swift
@@ -313,17 +318,18 @@ searchSubject
   The golden rule is that **Feature modules can NEVER depend on each other horizontally**—they communicate through a coordinator or routing interface to prevent circular dependencies. Working on the 'Payments' module doesn't trigger a rebuild of the 'Accounts' module."
 
 ```mermaid
-graph TD
-    App[App Target] --> FP(Feature: Payments)
-    App --> FA(Feature: Accounts)
-    App --> FC(Feature: Cards)
-    FP -.->|Interface Only| Routing(Feature Routing Abstraction)
-    FA -.->|Interface Only| Routing
-    FP --> CN(Core Network)
-    FP --> DS(Design System)
+flowchart TD
+    App["Main App Target"] --> FP["Feature: Payments"]
+    App --> FA["Feature: Accounts"]
+    App --> FC["Feature: Cards"]
+    FP -.->|"Interface Only"| Routing["Feature Routing Abstraction"]
+    FA -.->|"Interface Only"| Routing
+    FC -.->|"Interface Only"| Routing
+    FP --> CN["Core: Networking"]
+    FP --> DS["Core: Design System"]
     FA --> CN
     FA --> DS
-    CN --> FM(Foundation Models)
+    CN --> FM["Foundation Models"]
     DS --> FM
 ```
 > **💡 What Interviewers Look For:** A clear strategy for breaking up a monolith. Explaining how to enforce dependency boundaries and avoiding horizontal coupling via routing interfaces.
@@ -337,13 +343,13 @@ graph TD
   The server sends down a JSON payload containing an array of 'Component' contracts. The iOS app acts as a dumb renderer engine mapping these JSON contracts to SwiftUI views. The classic gotcha is backward compatibility—if the server sends a new `CarouselComponent` to an older app version, the app must gracefully fall back to `EmptyView` rather than crashing during decoding."
 
 ```mermaid
-graph LR
-    Backend[Server Microservice] -- "JSON (Versioned Schema)" --> API[Network Layer]
-    API --> Decoder[SDUI Decoder Engine]
-    Decoder -- "Registry Match" --> ViewFactory[SwiftUI View Factory]
-    ViewFactory -- "Renders" --> View1[HeaderView]
-    ViewFactory -- "Renders" --> View2[BalanceCardView]
-    ViewFactory -- "Fallback" --> View3[EmptyView - No Crash!]
+flowchart LR
+    Backend["Server Microservice"] -->|"Versioned JSON Schema"| API["Network Client"]
+    API --> Decoder["SDUI Decoder Engine"]
+    Decoder -->|"Component Registry"| Factory["SwiftUI Component Factory"]
+    Factory -->|"Type Match"| V1["HeaderView Component"]
+    Factory -->|"Type Match"| V2["BalanceCardView Component"]
+    Factory -->|"Unknown Fallback"| V3["Safe Fallback View (No Crash)"]
 ```
 > **💡 What Interviewers Look For:** Highlight awareness of SDUI downsides: handling unknown types gracefully without crashing, security validation, and caching layouts to prevent UI jumping.
 
@@ -356,13 +362,13 @@ graph LR
   We apply optimistic UI updates locally so the user feels immediate feedback. Behind the scenes, the mutation is written to a persistent background queue. The sync engine then attempts network delivery with exponential backoff. Conflicts are resolved via 'last-write-wins' using server timestamps."
 
 ```mermaid
-graph TD
-    User((User)) -->|Action| UI[SwiftUI View]
-    UI -->|1. Write| LocalDB[(Local DB - Source of Truth)]
-    LocalDB -->|2. Observe| UI[Instant Optimistic Update]
-    LocalDB -->|3. Pending Mutation| Queue[Sync Engine Queue]
-    Queue -->|4. Push (Background)| Server[(Remote Server)]
-    Server -.->|5. Ack / Conflict Resolution| Queue
+flowchart TD
+    UserNode(("Mobile User")) -->|"User Action"| ViewNode["SwiftUI View"]
+    ViewNode -->|"1. Local Mutation"| DBNode[("Local Database (Source of Truth)")]
+    DBNode -->|"2. Reactive Observation"| ViewNode
+    DBNode -->|"3. Enqueue Mutation"| SyncQueue["Sync Engine Outbox"]
+    SyncQueue -->|"4. Background Upload"| RemoteServer[("Remote API Gateway")]
+    RemoteServer -.->|"5. Ack or Conflict Resolution"| SyncQueue
 ```
 > **💡 What Interviewers Look For:** Calling out the separation between UI state (which observes the local DB) and Network state (which syncs the DB to the backend) is the winning architectural answer.
 

@@ -1041,7 +1041,8 @@
       startOnLoad: false,
       theme: 'neutral',
       securityLevel: 'loose',
-      flowchart: { curve: 'linear' }
+      flowchart: { curve: 'linear', htmlLabels: true },
+      suppressErrorRendering: true
     });
   }
 
@@ -1117,20 +1118,21 @@ struct TransferFeature {
       `,
       diagram: `
 sequenceDiagram
-    participant UI as SwiftUI View
+    autonumber
+    actor UI as SwiftUI View
     participant Store as TCA Store
-    participant Reducer as Reducer
-    participant Env as Dependencies / API
-    UI->>Store: View sends Action (.submitTransfer)
-    Store->>Reducer: Forward Action + Current State
+    participant Reducer as Reducer Domain
+    participant Env as Dependencies
+    UI->>Store: Send Action (.submitTransfer)
+    Store->>Reducer: Forward Action and Current State
     Reducer-->>Store: Mutate State (isTransferring = true)
-    Store-->>UI: State updated (Show Spinner)
-    Reducer->>Env: Execute side-effect (API Call)
-    Env-->>Store: Feed Action back (.transferResponse)
-    Store->>Reducer: Forward Action + Current State
+    Store-->>UI: Re-render UI (Show Loading Spinner)
+    Reducer->>Env: Run Side Effect (API Call)
+    Env-->>Store: Return Result Action (.transferResponse)
+    Store->>Reducer: Forward Result Action
     Reducer-->>Store: Mutate State (isTransferring = false)
-    Store-->>UI: State updated (Hide Spinner)
-      `,
+    Store-->>UI: Re-render UI (Hide Spinner)
+`,
       leadTip: "Deep understanding of isolating side effects. Mentioning the <code>@Dependency</code> system and <code>TestStore</code> is critical. Interviewers want a tech lead who prioritizes 100% deterministic testability."
     },
     {
@@ -1158,7 +1160,7 @@ let project = Project(
             name: "FeatureAccounts",
             destinations: .iOS,
             product: .framework,
-            bundleId: "com.adib.feature.accounts",
+            bundleId: "com.company.feature.accounts",
             sources: ["Sources/**"],
             dependencies: [
                 .project(target: "CoreNetwork", path: "../../Core/Network"),
@@ -1169,7 +1171,7 @@ let project = Project(
             name: "FeatureAccountsTests",
             destinations: .iOS,
             product: .unitTests,
-            bundleId: "com.adib.feature.accounts.tests",
+            bundleId: "com.company.feature.accounts.tests",
             sources: ["Tests/**"],
             dependencies: [.target(name: "FeatureAccounts")]
         )
@@ -1177,15 +1179,15 @@ let project = Project(
 )</code></pre>
       `,
       diagram: `
-graph TD
-    A[Manifests: Project.swift] --> B(Tuist CLI)
-    B --> C{Cache Hit?}
-    C -->|Yes| D[Pull Pre-compiled .xcframework]
-    C -->|No| E[Compile Source Code]
-    D --> F[Generate .xcodeproj / .xcworkspace]
+flowchart TD
+    A["Project Manifest (Project.swift)"] --> B["Tuist CLI Engine"]
+    B --> C{"Binary Cache Hit?"}
+    C -->|"Yes"| D["Pull Prebuilt XCFramework"]
+    C -->|"No"| E["Compile Module from Source"]
+    D --> F["Generate Ephemeral Workspace"]
     E --> F
-    F --> G[Fast Incremental Build: 2 min vs 15 min]
-      `,
+    F --> G["Fast Incremental Build (2 min vs 15 min)"]
+`,
       leadTip: "They want to hear that you understand developer ROI. Mentioning 'binary caching', 'graph traversal', and eliminating .pbxproj conflicts proves you know how to scale a mobile engineering team."
     },
     {
@@ -1218,15 +1220,15 @@ final class AccountViewModel {
       `,
       diagram: `
 flowchart TD
-    subgraph ObservableObject [Pre-iOS 17: ObservableObject]
-        A1[Change Property A] --> B1[ObjectWillChange Publisher]
-        B1 --> C1[Invalidates ALL Views observing object!]
+    subgraph PreiOS17 ["Pre-iOS 17: ObservableObject"]
+        A1["Mutate Property A"] --> B1["objectWillChange Publisher"]
+        B1 --> C1["Invalidates ALL Views observing Object"]
     end
-    subgraph ObservableMacro [iOS 17+: @Observable]
-        A2[Change Property A] --> B2[Observation Registrar]
-        B2 --> C2[Invalidates ONLY Views reading Property A!]
+    subgraph ModernObservation ["iOS 17+: @Observable Macro"]
+        A2["Mutate Property A"] --> B2["Observation Registrar"]
+        B2 --> C2["Invalidates ONLY Views reading Property A"]
     end
-      `,
+`,
       leadTip: "Show you understand WHY @Observable exists: granular property-level observation eliminating view invalidation cascades, and how it simplifies dependency injection via <code>@Environment</code>."
     },
     {
@@ -1260,12 +1262,12 @@ flowchart TD
 }</code></pre>
       `,
       diagram: `
-graph TD
-    A[View Update Triggered] --> B{Same Identity?}
-    B -- Yes --> C[Update View Value & State Preserved]
-    B -- No --> D[Destroy Old View, Create New View]
-    D --> E[State Lost / Severe Re-render Cascade!]
-      `,
+flowchart TD
+    A["View Update Triggered"] --> B{"Same View Identity?"}
+    B -->|"Yes"| C["Update Body & Preserve State"]
+    B -->|"No"| D["Destroy Old View, Recreate Node"]
+    D --> E["State Lost and Layout Tree Recalculated"]
+`,
       leadTip: "Senior engineers don't just build UI; they optimize it. Mentioning <code>Self._printChanges()</code> or Instruments (SwiftUI template) proves you have battle-tested debugging strategies."
     },
     {
@@ -1303,11 +1305,11 @@ enum Route: Hashable {
       `,
       diagram: `
 flowchart LR
-    A[Push Notification] --> B[AppRouter]
-    C[User Button Action] --> B
-    B --> |Mutates| D[NavigationPath Data Array]
-    D --> |Drives| E[NavigationStack UI]
-      `,
+    A["Push Notification Deep Link"] --> B["Central AppRouter"]
+    C["User Button Tap Action"] --> B
+    B -->|"Mutates"| D["NavigationPath Data Stack"]
+    D -->|"Drives"| E["NavigationStack View Hierarchy"]
+`,
       leadTip: "Decoupling UI from routing logic. The 'Coordinator Pattern in SwiftUI' using data-driven <code>NavigationPath</code> is the gold standard answer."
     },
     {
@@ -1341,13 +1343,13 @@ func priceStream() -> AsyncStream&lt;Double&gt; {
 }</code></pre>
       `,
       diagram: `
-graph TD
-    A[Task Type] --> B{One-shot or Stream?}
-    B -- One-shot: API Call --> C[async/await (Clean, Safe)]
-    B -- Stream: Events over time --> D{Complex Operators Needed?}
-    D -- Yes: Debounce, Throttle --> E[Combine / RxSwift]
-    D -- No: Simple iteration --> F[AsyncStream / AsyncSequence]
-      `,
+flowchart TD
+    A["Task Requirement"] --> B{"One-shot or Stream?"}
+    B -->|"One-shot"| C["Swift Concurrency: async / await"]
+    B -->|"Stream"| D{"Complex Reactive Operators?"}
+    D -->|"Yes: Debounce, Throttle, Zip"| E["Combine or Reactive Framework"]
+    D -->|"No: Simple Async Loop"| F["AsyncSequence or AsyncStream"]
+`,
       leadTip: "Nuance and pragmatism. A junior dev wants to rewrite everything in the newest tech. A Tech Lead knows Combine still has superior operators for reactive streams, while Swift Concurrency offers unmatched safety for async tasks."
     },
     {
@@ -1377,16 +1379,20 @@ graph TD
       `,
       diagram: `
 sequenceDiagram
-    participant User
-    participant Subject
-    participant Network
-    User->>Subject: Types "A"
-    User->>Subject: Types "AA"
-    User->>Subject: Types "AAPL" (pauses)
-    Note over Subject: Debounce waits 300ms
-    Subject->>Network: Request "AAPL" (cancels "A" & "AA")
-    Network-->>Subject: Results for "AAPL"
-      `,
+    actor User as User Input
+    participant Subject as PassthroughSubject
+    participant Operator as debounce and switchToLatest
+    participant Network as Network Service
+    User->>Subject: User types character A
+    User->>Subject: User types character AA
+    User->>Subject: User types query AAPL and pauses
+    Subject->>Operator: Emits stream events
+    Note over Operator: Debounce timer waits 300ms
+    Operator->>Network: Execute search for AAPL
+    Note over Network: Cancels in-flight requests for A and AA
+    Network-->>Operator: Return search results for AAPL
+    Operator-->>User: Update search UI
+`,
       leadTip: "Mentioning <code>switchToLatest</code> to solve the classic 'out-of-order network response' bug is exactly what interviewers listen for at the Staff/Lead level."
     },
     {
@@ -1405,19 +1411,20 @@ sequenceDiagram
         <p>The golden rule is that <strong>Feature modules can NEVER depend on each other horizontally</strong>—they communicate through a coordinator or routing interface to prevent circular dependencies. Working on the 'Payments' module doesn't trigger a rebuild of the 'Accounts' module.</p>
       `,
       diagram: `
-graph TD
-    App[App Target] --> FP(Feature: Payments)
-    App --> FA(Feature: Accounts)
-    App --> FC(Feature: Cards)
-    FP -.->|Interface Only| Routing(Feature Routing Abstraction)
-    FA -.->|Interface Only| Routing
-    FP --> CN(Core Network)
-    FP --> DS(Design System)
+flowchart TD
+    App["Main App Target"] --> FP["Feature: Payments"]
+    App --> FA["Feature: Accounts"]
+    App --> FC["Feature: Cards"]
+    FP -.->|"Interface Only"| Routing["Feature Routing Abstraction"]
+    FA -.->|"Interface Only"| Routing
+    FC -.->|"Interface Only"| Routing
+    FP --> CN["Core: Networking"]
+    FP --> DS["Core: Design System"]
     FA --> CN
     FA --> DS
-    CN --> FM(Foundation Models)
+    CN --> FM["Foundation Models"]
     DS --> FM
-      `,
+`,
       leadTip: "A clear strategy for breaking up a monolith. Explaining how to enforce dependency boundaries and avoiding horizontal coupling via routing interfaces."
     },
     {
@@ -1458,14 +1465,14 @@ struct AnyComponent: Decodable {
 }</code></pre>
       `,
       diagram: `
-graph LR
-    Backend[Server Microservice] -- "JSON (Versioned Schema)" --> API[Network Layer]
-    API --> Decoder[SDUI Decoder Engine]
-    Decoder -- "Registry Match" --> ViewFactory[SwiftUI View Factory]
-    ViewFactory -- "Renders" --> View1[HeaderView]
-    ViewFactory -- "Renders" --> View2[BalanceCardView]
-    ViewFactory -- "Fallback" --> View3[EmptyView - No Crash!]
-      `,
+flowchart LR
+    Backend["Server Microservice"] -->|"Versioned JSON Schema"| API["Network Client"]
+    API --> Decoder["SDUI Decoder Engine"]
+    Decoder -->|"Component Registry"| Factory["SwiftUI Component Factory"]
+    Factory -->|"Type Match"| V1["HeaderView Component"]
+    Factory -->|"Type Match"| V2["BalanceCardView Component"]
+    Factory -->|"Unknown Fallback"| V3["Safe Fallback View (No Crash)"]
+`,
       leadTip: "Highlight awareness of SDUI downsides: handling unknown types gracefully without crashing, security validation, and caching layouts to prevent UI jumping."
     },
     {
@@ -1484,14 +1491,14 @@ graph LR
         <p>We apply optimistic UI updates locally so the user feels immediate feedback. Behind the scenes, the mutation is written to a persistent background queue. The sync engine then attempts network delivery with exponential backoff. Conflicts are resolved via 'last-write-wins' using server timestamps.</p>
       `,
       diagram: `
-graph TD
-    User((User)) -->|Action| UI[SwiftUI View]
-    UI -->|1. Write| LocalDB[(Local DB - Source of Truth)]
-    LocalDB -->|2. Observe| UI[Instant Optimistic Update]
-    LocalDB -->|3. Pending Mutation| Queue[Sync Engine Queue]
-    Queue -->|4. Push (Background)| Server[(Remote Server)]
-    Server -.->|5. Ack / Conflict Resolution| Queue
-      `,
+flowchart TD
+    UserNode(("Mobile User")) -->|"User Action"| ViewNode["SwiftUI View"]
+    ViewNode -->|"1. Local Mutation"| DBNode[("Local Database (Source of Truth)")]
+    DBNode -->|"2. Reactive Observation"| ViewNode
+    DBNode -->|"3. Enqueue Mutation"| SyncQueue["Sync Engine Outbox"]
+    SyncQueue -->|"4. Background Upload"| RemoteServer[("Remote API Gateway")]
+    RemoteServer -.->|"5. Ack or Conflict Resolution"| SyncQueue
+`,
       leadTip: "Calling out the separation between UI state (which observes the local DB) and Network state (which syncs the DB to the backend) is the winning architectural answer."
     },
     {
@@ -1526,13 +1533,13 @@ final class TelemetryManager: NSObject, MXMetricManagerSubscriber {
 }</code></pre>
       `,
       diagram: `
-graph LR
-    App[iOS App Runtime] -->|Daily Telemetry| OS[iOS MetricKit Daemon]
-    OS -- MXMetricPayload --> Sub[MXMetricManagerSubscriber]
-    Sub --> Logger[Telemetry Service]
-    Logger -->|Batch Upload| Backend[Datadog / Grafana]
-    Dev[Tech Lead] -->|Analyzes Hangs & OOMs| Backend
-      `,
+flowchart LR
+    App["iOS App Runtime"] -->|"Diagnostic Signals"| OS["iOS MetricKit Daemon"]
+    OS -->|"MXMetricPayload Delivery"| Sub["MXMetricManagerSubscriber"]
+    Sub --> Logger["Telemetry Service"]
+    Logger -->|"Compressed Batch Upload"| Backend["Monitoring Backend (Datadog / NewRelic)"]
+    Lead["iOS Tech Lead"] -->|"Analyzes Hang Rates and Crash Signals"| Backend
+`,
       leadTip: "Distinguishing between local debugging (Instruments) and production telemetry (MetricKit) highlights senior-level operational awareness."
     },
     {
@@ -1565,20 +1572,20 @@ func fetchAccountDetails(id: String) async throws -> Account {
       `,
       diagram: `
 flowchart TD
-    subgraph Legacy UI
-        A[View Controller / ViewModel - RxSwift]
+    subgraph LegacyLayer ["Legacy Presentation Layer"]
+        A["ViewController or ViewModel (RxSwift / Combine)"]
     end
-    subgraph Bridge Layer
-        B[AsyncStream / withCheckedContinuation]
+    subgraph BridgeLayer ["Concurrency Adapter Bridge"]
+        B["AsyncStream & withCheckedContinuation"]
     end
-    subgraph Modern Core
-        C[Swift Concurrency Network Layer]
-        D[Actors for Shared State]
+    subgraph ModernCore ["Modern Concurrency Core"]
+        C["Swift Concurrency Network Service"]
+        D["Actor-Isolated State Managers"]
     end
     A --> B
     B --> C
     B --> D
-      `,
+`,
       leadTip: "Showing you know how to manage the RISK of an architectural migration using bridging mechanisms is what gets you hired as a Tech Lead."
     },
 
@@ -1612,12 +1619,12 @@ actor ElevatorController {
 }</code></pre>
       `,
       diagram: `
-graph LR
-    P[Passenger Request] --> D[Elevator Dispatcher / Controller]
-    D -- SCAN Algorithm --> C1[Car #1 - Moving Up]
-    D -- Assign Nearest --> C2[Car #2 - Idle Floor 4]
-    C1 --> F1[Floor Queue: 5, 8, 10]
-      `,
+flowchart LR
+    P["Passenger Floor Request"] --> D["Elevator Dispatcher Engine"]
+    D -->|"SCAN Scheduling Algorithm"| C1["Elevator Car 1 (Moving Up)"]
+    D -->|"Assign Nearest Idle Car"| C2["Elevator Car 2 (Idle Floor 4)"]
+    C1 --> F1["Floor Stop Queue (Floors 5, 8, 10)"]
+`,
       leadTip: "Separate the <strong>Dispatcher (brain)</strong> from the <strong>Elevator Car (hardware)</strong> and mention the <strong>SCAN algorithm</strong>."
     },
     {
@@ -1673,16 +1680,16 @@ graph LR
         <p>Modern order: <code>loadView</code> -> <code>viewDidLoad</code> -> <code>viewWillAppear</code> -> <strong><code>viewIsAppearing</code></strong> (traits and geometry guaranteed!) -> <code>viewWillLayoutSubviews</code> / <code>viewDidLayoutSubviews</code> -> <code>viewDidAppear</code> -> <code>viewWillDisappear</code> -> <code>viewDidDisappear</code> -> <code>deinit</code>.</p>
       `,
       diagram: `
-graph TD
-    A[loadView] --> B[viewDidLoad - Initial setup, bindings]
-    B --> C[viewWillAppear - Fast status bar updates]
-    C --> D[viewIsAppearing - Final bounds & traits ready!]
-    D --> E[viewWillLayoutSubviews / viewDidLayoutSubviews]
-    E --> F[viewDidAppear - Start animations, analytics]
-    F --> G[viewWillDisappear]
-    G --> H[viewDidDisappear]
-    H --> I[deinit - Reclaimed by ARC]
-      `,
+flowchart TD
+    A["loadView (Create View Hierarchy)"] --> B["viewDidLoad (One-time Setup and Bindings)"]
+    B --> C["viewWillAppear (Status Bar and Visibility)"]
+    C --> D["viewIsAppearing (Geometry and Traits Ready - iOS 13+)"]
+    D --> E["viewWillLayoutSubviews / viewDidLayoutSubviews"]
+    E --> F["viewDidAppear (Animations and Telemetry)"]
+    F --> G["viewWillDisappear (Resign First Responder)"]
+    G --> H["viewDidDisappear (Tear Down Timers)"]
+    H --> I["deinit (Deallocated by ARC)"]
+`,
       leadTip: "Mentioning <code>viewIsAppearing</code> proves you follow modern UIKit advancements."
     },
     {
@@ -1703,19 +1710,23 @@ graph TD
       diagram: `
 classDiagram
     class NotificationManager {
-        -services: [Notifiable]
-        +broadcast(message: String)
+        -List~Notifiable~ services
+        +broadcast(String message)
     }
     class Notifiable {
         <<interface>>
-        +send(message: String)
+        +send(String message)
     }
-    class EmailService { +send() }
-    class SMSService { +send() }
-    NotificationManager --> Notifiable : depends on abstraction (DIP)
-    EmailService ..|> Notifiable
-    SMSService ..|> Notifiable
-      `,
+    class EmailService {
+        +send(String message)
+    }
+    class SMSService {
+        +send(String message)
+    }
+    NotificationManager --> Notifiable : depends on abstraction
+    EmailService ..|> Notifiable : implements
+    SMSService ..|> Notifiable : implements
+`,
       leadTip: "Tie SOLID directly to <strong>Unit Testing</strong>: DIP allows injecting Mock protocols in tests."
     },
     {
@@ -1751,18 +1762,18 @@ classDiagram
       `,
       diagram: `
 sequenceDiagram
-    participant App as iOS Banking App
-    participant Server as Banking Gateway
+    participant App as iOS Mobile Client
+    participant Server as Secure Backend Gateway
     App->>Server: TLS Client Hello
     Server-->>App: Server Certificate Chain
-    Note over App: URLSessionDelegate checks challenge
-    App->>App: Extract SPKI Public Key Hash
-    alt Hash Matches Pinned Key
-        App-->>Server: .useCredential (Connection Secured)
-    else Hash Mismatch (MitM Attack)
-        App-->>Server: .cancelAuthenticationChallenge (Terminated)
+    Note over App: URLSessionDelegate validates server challenge
+    App->>App: Extract SPKI Subject Public Key Info Hash
+    alt Hash Matches Known Pinned Key
+        App-->>Server: TLS Handshake Verified (useCredential)
+    else Hash Mismatch (Potential Man-in-the-Middle)
+        App-->>Server: Terminate Connection (cancelAuthenticationChallenge)
     end
-      `,
+`,
       leadTip: "Highlight: 'Public Key pinning is preferred over leaf certificate pinning because it prevents catastrophic service outages when SSL certificates are renewed.'"
     },
     {
@@ -1796,13 +1807,13 @@ sequenceDiagram
         <p><code>NSManagedObjectContext</code> is NOT thread-safe! Never pass managed objects across queues—pass thread-safe <code>NSManagedObjectID</code> instead. Use <code>viewContext.automaticallyMergesChangesFromParent = true</code> to reflect background writes in the UI automatically.</p>
       `,
       diagram: `
-graph TD
-    PSC[NSPersistentStoreCoordinator] --> Store[(SQLite DB File)]
-    PSC --> MainMOC[viewContext - Main Thread / UI Only]
-    PSC --> BgMOC[newBackgroundContext - Background Queue]
-    BgMOC -- Save Changes --> PSC
-    PSC -. automaticallyMergesChangesFromParent .-> MainMOC
-      `,
+flowchart TD
+    PSC["NSPersistentStoreCoordinator"] --> Store[("SQLite DB File on Disk")]
+    PSC --> MainMOC["viewContext (Main Thread / UI Only)"]
+    PSC --> BgMOC["newBackgroundContext (Background Queue)"]
+    BgMOC -->|"Save Changes"| PSC
+    PSC -.->|"automaticallyMergesChangesFromParent"| MainMOC
+`,
       leadTip: "Mention the Xcode launch argument <code>-com.apple.CoreData.ConcurrencyDebug 1</code>, which crashes if a context is accessed off its thread."
     },
     {
@@ -1820,13 +1831,13 @@ graph TD
         <p>Avoid cherry-picking. Use scheduled automated release trains cutting bi-weekly from <code>develop</code>. Unready features stay hidden behind Feature Flags (Remote Config). Fastlane handles signing via <code>match</code>, build via <code>gym</code>, and testing via <code>scan</code>.</p>
       `,
       diagram: `
-graph LR
-    Dev[develop / main branch] -- Bi-Weekly Train Cut --> Rel[release/v4.8 branch]
-    Rel --> CI[GitLab CI: SwiftLint + 90% UT + SonarQube]
-    CI --> Fastlane[fastlane match signing + gym build]
-    Fastlane --> Dist[Firebase QA & TestFlight Beta]
-    Dist --> AppStore[App Store Submission]
-      `,
+flowchart LR
+    Dev["Main / Develop Branch"] -->|"Bi-Weekly Release Cut"| Rel["Release Branch (release/v4.8)"]
+    Rel --> CI["CI Pipeline (Linting, 90% Unit Tests, SonarQube)"]
+    CI --> Fastlane["Fastlane Engine (Match Signing & Build)"]
+    Fastlane --> Dist["Distribution (Internal QA & TestFlight Beta)"]
+    Dist --> AppStore["App Store Phased Rollout"]
+`,
       leadTip: "Highlight <strong>Feature Flags</strong>: release trains leave on schedule regardless of individual feature readiness because unready features are simply toggled off."
     },
     {
@@ -1876,13 +1887,13 @@ graph LR
         <p>MVC = Massive View Controller. MVVM = Standard for modern iOS with Combine or @Observable. VIPER = High separation of concerns for large 20+ dev teams. VIP = Unidirectional loop (VC -> Interactor -> Presenter -> VC).</p>
       `,
       diagram: `
-graph LR
-    subgraph VIP Clean-Swift Unidirectional Cycle
-    VC[ViewController] -->|1. Request| Interactor[Interactor - Business Logic]
-    Interactor -->|2. Response| Presenter[Presenter - UI formatting]
-    Presenter -->|3. ViewModel| VC
+flowchart LR
+    subgraph VIPCycle ["VIP Clean-Swift Unidirectional Flow"]
+        VC["ViewController (UI / View)"] -->|"1. User Request"| Interactor["Interactor (Business Logic)"]
+        Interactor -->|"2. Response Model"| Presenter["Presenter (UI Formatting)"]
+        Presenter -->|"3. ViewModel State"| VC
     end
-      `,
+`,
       leadTip: "Say: 'Architecture choice depends on team scale and framework. For small-medium teams, MVVM strikes the optimal balance between testability and velocity.'"
     },
     {
@@ -1932,16 +1943,16 @@ graph LR
         <p>Strong increments retain count. Weak does not increment, always optional, zeroed via <strong>Side Tables</strong> upon deallocation. Unowned expects object to never be nil; traps if accessed after deallocation.</p>
       `,
       diagram: `
-graph LR
-    subgraph Retain Cycle Leak
-    A[ViewController] -->|strong| B[Closure / Handler]
-    B -->|strong self| A
+flowchart LR
+    subgraph RetainCycle ["Retain Cycle (Memory Leak)"]
+        A["ViewController"] -->|"Strong Reference"| B["Completion Handler Closure"]
+        B -->|"Strong Self Reference"| A
     end
-    subgraph Resolved Cleanly
-    VC[ViewController] -->|strong| CL[Closure]
-    CL -.->|weak self| VC
+    subgraph ResolvedCleanly ["Resolved with Capture List"]
+        VC["ViewController"] -->|"Strong Reference"| CL["Closure"]
+        CL -.->|"weak self (Side Table Zeroing)"| VC
     end
-      `,
+`,
       leadTip: "Explain <strong>Side Tables</strong>: Swift objects store retain counts inline until an object has weak references or an overflow count, at which point Swift allocates an external Side Table."
     },
     {
@@ -2087,12 +2098,12 @@ graph LR
         <p>Model (<code>.xcdatamodeld</code> schema) + Coordinator (SQLite conductor) + Context (scratchpad) encapsulated into unified <code>NSPersistentContainer</code>.</p>
       `,
       diagram: `
-graph TD
-    MOM[NSManagedObjectModel - Schema] --> PSC[NSPersistentStoreCoordinator]
-    Store[NSPersistentStore - SQLite file] --> PSC
-    PSC --> MOC[NSManagedObjectContext - Scratchpad]
-    MOC --> MO[NSManagedObjects - Entities]
-      `,
+flowchart TD
+    MOM["NSManagedObjectModel (Data Schema)"] --> PSC["NSPersistentStoreCoordinator"]
+    Store["NSPersistentStore (SQLite File on Disk)"] --> PSC
+    PSC --> MOC["NSManagedObjectContext (Working Scratchpad)"]
+    MOC --> MO["NSManagedObjects (Entity Instances)"]
+`,
       leadTip: "Emphasize that Core Data is <strong>NOT a relational database</strong>—it is an <strong>object graph management and persistence framework</strong> that happens to use SQLite as a storage engine by default."
     },
     {
@@ -2141,7 +2152,7 @@ graph TD
       geminiAnswer: `
         <p>Apple caps review prompt to <strong>3 times in a 365-day period</strong>. Never hook directly to a 'Rate Us' button because the OS may silently suppress it. Modern SwiftUI: <code>@Environment(\\.requestReview) var requestReview</code>.</p>
       `,
-      leadTip: "Great talking point: You increased the ADIB banking app rating from 3.7 to 4.7 by triggering the prompt at positive emotional moments (e.g. after successful bill payment) rather than at app launch."
+      leadTip: "Great talking point: You increased an enterprise mobile banking app rating from 3.7 to 4.7 by triggering the prompt at positive emotional moments (e.g. after successful bill payment) rather than at app launch."
     },
     {
       id: "q-nsdateformatter",
@@ -2270,14 +2281,14 @@ graph TD
         <p>Workspace = top wrapper coordinating multi-projects and SPM packages. Project = source container. Target = single build product (App, Extension, Tests). Scheme = execution instructions.</p>
       `,
       diagram: `
-graph TD
-    WS[.xcworkspace] --> Proj1[Main App .xcodeproj]
-    WS --> Proj2[SharedKit SPM Package]
-    Proj1 --> Target1[iOS App Target]
-    Proj1 --> Target2[Notification Extension Target]
-    Proj1 --> Target3[Unit Tests Target]
-    Scheme[Scheme: Debug / Staging / Release] -. controls .-> Target1
-      `,
+flowchart TD
+    WS["Xcode Workspace (.xcworkspace)"] --> Proj1["Main App Project (.xcodeproj)"]
+    WS --> Proj2["Shared Framework Package (SPM)"]
+    Proj1 --> Target1["iOS Application Target"]
+    Proj1 --> Target2["Notification Extension Target"]
+    Proj1 --> Target3["Unit Tests Target"]
+    Scheme["Scheme (Debug / Staging / Release)"] -.->|"Controls Build & Run"| Target1
+`,
       leadTip: "Mention using Scheme pre/post-actions and Build Configurations to manage multi-environment builds without changing source code."
     },
     {
@@ -2308,7 +2319,7 @@ graph TD
       status: "valid",
       statusText: "Verified Correct",
       geminiAnswer: `
-        <p>Bundle ID = reverse-domain target identifier. App ID = Team ID + Bundle ID (e.g. <code>ABCDE12345.com.adib.smartbanking</code>) used for entitlements and App Groups.</p>
+        <p>Bundle ID = reverse-domain target identifier. App ID = Team ID + Bundle ID (e.g. <code>TEAMID1234.com.company.mobileapp</code>) used for entitlements and App Groups.</p>
       `,
       leadTip: "Mention that App Extensions (e.g., Notification Service Extension) MUST prefix their Bundle ID with the parent app's Bundle ID."
     },
@@ -2327,13 +2338,13 @@ graph TD
         <p>Not Running -> Inactive (interrupted, FaceID) -> Active (foreground) -> Background (executing code) -> Suspended (frozen in RAM, killed without notice by Jetsam). Decoupled in iOS 13+ with <code>UISceneDelegate</code> for multi-window.</p>
       `,
       diagram: `
-graph LR
-    NotRunning[Not Running] --> Inactive[Inactive - Interrupted]
-    Inactive --> Active[Active - Foreground & Touches]
-    Active --> Background[Background - Code executing]
-    Background --> Suspended[Suspended - Frozen in RAM]
+flowchart LR
+    NotRunning["Not Running"] --> Inactive["Inactive (Foreground, Interrupted)"]
+    Inactive --> Active["Active (Foreground, Processing Events)"]
+    Active --> Background["Background (Executing Background Tasks)"]
+    Background --> Suspended["Suspended (Frozen in Memory, No CPU)"]
     Suspended --> NotRunning
-      `,
+`,
       leadTip: "Explain that an app does NOT receive a notification when killed while in the Suspended state. Cleanup must happen in <code>applicationDidEnterBackground</code>."
     },
     {
@@ -2373,11 +2384,11 @@ graph LR
         <p><strong>Bitcode was deprecated in Xcode 14 and completely removed in Xcode 15+ and App Store submissions!</strong> Apple no longer re-compiles bitcode for iOS. App Thinning today consists exclusively of <strong>App Slicing</strong> and <strong>On-Demand Resources (ODR)</strong>.</p>
       `,
       diagram: `
-graph LR
-    UniversalIPA[Full Build] --> AppStore[App Store Connect]
-    AppStore -- App Slicing --> iPhone15[Device Sliced IPA: @3x + arm64]
-    AppStore -- ODR --> DynamicAssets[On-Demand Resources]
-      `,
+flowchart LR
+    UniversalBuild["Full App Archive (Universal)"] --> AppStore["App Store Connect"]
+    AppStore -->|"App Slicing"| SlicedIPA["Device-Specific Sliced IPA (@3x + arm64)"]
+    AppStore -->|"On-Demand Resources"| DynamicAssets["Downloadable Asset Packs (ODR)"]
+`,
       leadTip: "If asked about Bitcode in an interview, state immediately: 'Bitcode was an intermediate LLVM format, but Apple deprecated it in Xcode 14 and removed it in Xcode 15.'"
     },
     {
